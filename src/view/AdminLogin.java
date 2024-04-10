@@ -13,9 +13,13 @@ import javax.swing.border.EmptyBorder;
 import components.BtnMouseListener;
 import components.MyBtn;
 import components.TxtFieldFocusListener;
+import controller.UserController;
+import model.UserModel;
 import utilities.LibColors;
 
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Toolkit;
 
@@ -87,18 +91,7 @@ public class AdminLogin extends JDialog {
 		contentPanel.add(lblName);
 
 		JTextField txtName = new JTextField();
-		txtName.addFocusListener(TxtFieldFocusListener.getListener(txtName));
-//		txtName.addFocusListener(new FocusAdapter() {
-//			@Override
-//			public void focusGained(FocusEvent e) {
-//				txtName.setBorder(BorderFactory.createLineBorder(LibColors.BORDER, 2));
-//			}
-//
-//			@Override
-//			public void focusLost(FocusEvent e) {
-//				txtName.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-//			}
-//		});
+		txtName.addFocusListener(TxtFieldFocusListener.getFocusListener(txtName));
 		txtName.setBounds(149, 64, 150, 20);
 		contentPanel.add(txtName);
 		txtName.setColumns(10);
@@ -113,35 +106,21 @@ public class AdminLogin extends JDialog {
 		btnLogin.setBounds(134, 157, 75, 25);
 		
 		MyBtn.changeMyBtnStyle(btnLogin);
-
-//		btnLogin.addMouseListener(new MouseAdapter() {
-//			@Override
-//			public void mouseEntered(MouseEvent e) {
-//				btnLogin.setBackground(LibColors.PRIMARY_ACCENT);
-//				btnLogin.setBorder(BorderFactory.createEtchedBorder());
-//			}
-//
-//			@Override
-//			public void mouseExited(MouseEvent e) {
-//				btnLogin.setBackground(LibColors.PRIMARY_BG);
-//				btnLogin.setBorder(BorderFactory.createEmptyBorder());
-//			}
-//
-//			@Override
-//			public void mousePressed(MouseEvent e) {
-//				btnLogin.setBackground(LibColors.PRIMARY_BG);
-//			}
-//
-//			public void mouseReleased(MouseEvent e) {
-//				btnLogin.setBackground(LibColors.PRIMARY_ACCENT);
-//			}
-//		});
 		btnLogin.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
 				if (!txtName.getText().isBlank() && txtPass.getPassword().length > 0) {
-					System.out.println(txtPass.getPassword());
-
+					UserController ctl = new UserController();
+					UserModel user = new UserModel();
+					user.setUsername(txtName.getText());
+					user.setPassword(new String(txtPass.getPassword()));
+					
+					if(ctl.login(user)) {
+						Test.showFrame();
+						dispose();
+					} else {
+						JOptionPane.showMessageDialog(null, "Username and Passord combination is incorrect");
+					}
 				}
 			}
 		});
@@ -149,17 +128,7 @@ public class AdminLogin extends JDialog {
 		contentPanel.add(btnLogin);
 
 		txtPass = new JPasswordField();
-		txtPass.addFocusListener(new FocusAdapter() {
-			@Override
-			public void focusGained(FocusEvent e) {
-				txtPass.setBorder(BorderFactory.createLineBorder(LibColors.BORDER, 2));
-			}
-
-			@Override
-			public void focusLost(FocusEvent e) {
-				txtPass.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-			}
-		});
+		txtPass.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPass));
 		txtPass.setBounds(149, 107, 150, 20);
 		contentPanel.add(txtPass);
 	}

@@ -10,7 +10,7 @@ import javax.swing.JTextField;
 import utilities.LibColors;
 
 public class TxtFieldFocusListener {
-	public static FocusAdapter getListener(JTextField txt) {
+	public static FocusAdapter getFocusListener(JTextField txt) {
 		FocusAdapter adapter = new FocusAdapter() {
 			@Override
 			public void focusGained(FocusEvent e) {
@@ -19,10 +19,10 @@ public class TxtFieldFocusListener {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				txt.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+				txt.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
 			}
 		};
-		
+
 		return adapter;
 	}
 }

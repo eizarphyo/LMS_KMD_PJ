@@ -9,7 +9,6 @@ import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import components.BtnMouseListener;
 import components.MyBtn;
 import controller.AuthorController;
 import model.AuthorModel;

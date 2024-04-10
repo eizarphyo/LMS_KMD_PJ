@@ -39,7 +39,7 @@ public class AuthorController {
 		}
 	}
 
-	public int update(AuthorModel author)  {
+	public int update(AuthorModel author) {
 		String query = "UPDATE lib.author SET author_name=? WHERE author_id=?";
 
 		PreparedStatement ps;
@@ -47,7 +47,7 @@ public class AuthorController {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, author.getName());
 			ps.setString(2, author.getId());
-			
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -62,7 +62,7 @@ public class AuthorController {
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, author.getId());
-			
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -139,22 +139,40 @@ public class AuthorController {
 		}
 		return authors;
 	}
-	
+
 	public boolean hasDuplicateName(AuthorModel author) {
 		String query = "SELECT * FROM lib.author WHERE author_name=?";
-		
+
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, author.getName());
-			
+
 			ResultSet rs = ps.executeQuery();
-			
-			if(rs.next()) {
+
+			if (rs.next()) {
 				return true;
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 		return false;
+	}
+
+	public static String getIdByName(String name) {
+		String query = "SELECT * FROM lib.author WHERE author_name=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("author_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 }
