@@ -4,15 +4,47 @@ import java.util.List;
 
 import javax.swing.table.DefaultTableModel;
 
+import controller.AuthorController;
+import controller.BookController;
+import controller.GenreController;
+import controller.PublisherController;
 import model.AuthorModel;
 import model.BookModel;
 import model.GenreModel;
+import model.PublisherModel;
+import view.Test;
 
 public class MyTblFunctions {
-	public static void updateAuthors(List<AuthorModel> authors, DefaultTableModel dtm) {
-		String[] row = new String[2];
-
+	public static void updateBooksTable() {
+		DefaultTableModel dtm = Test.dtm;
 		dtm.setRowCount(0);
+		
+		BookController bctl = new BookController();
+		List<BookModel> books = bctl.getAllBooks();
+		
+		String[] row = new String[8];
+
+		for(BookModel book: books) {
+			row[0] = book.getId();
+			row[1] = book.getTitle();
+			row[2] = book.getAuthorName();
+			row[3] = book.getPublisherName();
+			row[4] = book.getGenreName();
+			row[5] = book.getPuplishedYr() + "";
+			row[6] = book.getPrice() + "";
+			row[7] = book.getQty() + "";
+			dtm.addRow(row);
+		}
+	} 
+	
+	public static void updateAuthorsTable() {
+		DefaultTableModel dtm = Test.dtm;
+		dtm.setRowCount(0);
+		
+		AuthorController actl = new AuthorController();
+		List<AuthorModel> authors = actl.getAllAuthors();
+		
+		String[] row = new String[2];
 
 		for(AuthorModel author: authors) {
 			row[0] = author.getId();
@@ -22,10 +54,15 @@ public class MyTblFunctions {
 		}
 	} 
 	
-	public static void updateGenres(List<GenreModel> genres, DefaultTableModel dtm) {
+	public static void updateGenresTable() {
+		DefaultTableModel dtm = Test.dtm;
+		dtm.setRowCount(0);
+		
+		GenreController ctl = new GenreController();
+		List<GenreModel> genres = ctl.getAllGenres();
+		
 		String[] row = new String[2];
 
-		dtm.setRowCount(0);
 
 		for(GenreModel genre: genres) {
 			row[0] = genre.getId();
@@ -34,23 +71,23 @@ public class MyTblFunctions {
 		}
 	} 
 	
-	public static void updateBooks(List<BookModel> books, DefaultTableModel dtm) {
-		String[] row = new String[8];
-
+	public static void updatePublishersTable() {
+		DefaultTableModel dtm = Test.dtm;
 		dtm.setRowCount(0);
+		
+		PublisherController ctl = new PublisherController();
+		List<PublisherModel> publishers = ctl.getAllPublishers();
+		
+		String[] row = new String[2];
 
-		for(BookModel book: books) {
-			row[0] = book.getId();
-			row[1] = book.getTitle();
-			row[2] = book.getAuthorName();
-			row[3] = book.getGenreName();
-			row[4] = book.getPublisherName();
-			row[5] = book.getPuplishedYr() + "";
-			row[6] = book.getPrice() + "";
-			row[7] = book.getQty() + "";
+		for(PublisherModel publisher: publishers) {
+			row[0] = publisher.getId();
+			row[1] = publisher.getName();
 			dtm.addRow(row);
 		}
 	} 
+	
+	
 	
 	
 }

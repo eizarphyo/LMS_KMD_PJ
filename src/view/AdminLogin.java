@@ -4,18 +4,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import components.BtnMouseListener;
 import components.MyBtn;
 import components.TxtFieldFocusListener;
 import controller.UserController;
 import model.UserModel;
-import utilities.LibColors;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -28,10 +25,6 @@ import javax.swing.SwingConstants;
 import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
 
 public class AdminLogin extends JDialog {
 

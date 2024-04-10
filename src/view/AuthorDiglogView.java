@@ -13,6 +13,7 @@ import components.MyBtn;
 import controller.AuthorController;
 import model.AuthorModel;
 import utilities.AutoID;
+import utilities.MyTblFunctions;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -26,8 +27,9 @@ public class AuthorDiglogView extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private final JPanel contentPanel = new JPanel();
-	private JTextField txtName;
+	private static JTextField txtName;
 	private static AuthorDiglogView dialog;
+	private static boolean update = false;
 
 	/**
 	 * Launch the application.
@@ -42,6 +44,40 @@ public class AuthorDiglogView extends JDialog {
 //			e.printStackTrace();
 //		}
 //	}
+
+	public static void showDialog() {
+		try {
+			dialog = new AuthorDiglogView();
+			dialog.setTitle(AutoID.getPK("author_id", "author", "AUT-"));
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void showDialog(String id) {
+		try {
+			update = true;
+			
+			dialog = new AuthorDiglogView();
+			dialog.setTitle(id);
+
+			AuthorController ctl = new AuthorController();
+			AuthorModel author = new AuthorModel();
+			author.setId(id);
+			author = ctl.getOneAuthorById(author);
+
+			txtName.setText(author.getName());
+			txtName.requestFocus();
+			txtName.selectAll();
+
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Create the dialog.
@@ -71,7 +107,7 @@ public class AuthorDiglogView extends JDialog {
 		contentPanel.add(txtName);
 		txtName.setColumns(10);
 
-		JButton btnAdd = new JButton("Add");
+		JButton btnAdd = new JButton(update ? "Update" : "Add");
 		MyBtn.changeMyBtnStyle(btnAdd);
 
 		btnAdd.addActionListener(new ActionListener() {
@@ -91,7 +127,12 @@ public class AuthorDiglogView extends JDialog {
 					txtName.requestFocus();
 					txtName.selectAll();
 					return;
-				} else if (ctl.insert(author) == 1) {
+				} 
+				
+				int ok = update ? ctl.update(author) : ctl.insert(author);
+				
+				if (ok == 1) {
+					MyTblFunctions.updateAuthorsTable();
 					JOptionPane.showMessageDialog(null, "Success!");
 					dispose();
 					return;
@@ -105,14 +146,4 @@ public class AuthorDiglogView extends JDialog {
 		contentPanel.add(btnAdd);
 	}
 
-	public static void showDialog() {
-		try {
-			dialog = new AuthorDiglogView();
-			dialog.setTitle(AutoID.getPK("author_id", "author", "AUT-"));
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

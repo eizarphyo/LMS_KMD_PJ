@@ -5,8 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import config.DBConfig;
 import model.AuthorModel;
@@ -64,10 +67,12 @@ public class AuthorController {
 			ps.setString(1, author.getId());
 
 			return ps.executeUpdate();
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			JOptionPane.showMessageDialog(null, "Delete Fails!\nBooks exist with this Author.");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
 		}
+		return 0;
 	}
 
 	public List<AuthorModel> getAllAuthors() {

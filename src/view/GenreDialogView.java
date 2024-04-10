@@ -11,6 +11,7 @@ import components.MyBtn;
 import controller.GenreController;
 import model.GenreModel;
 import utilities.AutoID;
+import utilities.MyTblFunctions;
 
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -25,8 +26,10 @@ import java.awt.event.ActionEvent;
 public class GenreDialogView extends JDialog {
 
 	private static final long serialVersionUID = 1L;
-	private JTextField txtName;
+	private static JTextField txtName;
 	private static GenreDialogView dialog;
+	
+	private static boolean update = false;
 
 	/**
 	 * Launch the application.
@@ -41,6 +44,44 @@ public class GenreDialogView extends JDialog {
 //			e.printStackTrace();
 //		}
 //	}
+	
+	public static void showDialog() {
+		try {
+			dialog = new GenreDialogView();
+			dialog.setTitle(AutoID.getPK("genre_id", "genre", "GEN-"));
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void showDialog(String id) {
+		update = true;
+		try {
+			dialog = new GenreDialogView();
+			
+			GenreController ctl = new GenreController();
+			GenreModel g = new GenreModel();
+			
+			g.setId(id);
+			g = ctl.getOneById(g);
+			
+			dialog.setTitle(g.getId());
+			txtName.setText(g.getName());
+			txtName.requestFocus();
+			txtName.selectAll();
+			
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		
+	}
 
 	/**
 	 * Create the dialog.
@@ -74,7 +115,7 @@ public class GenreDialogView extends JDialog {
 				contentPanel.add(txtName);
 			}
 			{
-				JButton btnAdd = new JButton("Add");
+				JButton btnAdd = new JButton(update ? "Update" : "Add");
 				MyBtn.changeMyBtnStyle(btnAdd);
 				btnAdd.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
@@ -94,7 +135,12 @@ public class GenreDialogView extends JDialog {
 							txtName.requestFocus();
 							txtName.selectAll();
 							return;
-						} else if (ctl.insert(genre) == 1) {
+						} 
+						
+						int ok = update ? ctl.update(genre) : ctl.insert(genre);
+						
+						if (ok == 1) {
+							MyTblFunctions.updateGenresTable();
 							JOptionPane.showMessageDialog(null, "Success!");
 							dispose();
 							return;
@@ -111,14 +157,5 @@ public class GenreDialogView extends JDialog {
 		}
 	}
 
-	public static void showDialog() {
-		try {
-			dialog = new GenreDialogView();
-			dialog.setTitle(AutoID.getPK("genre_id", "genre", "GEN-"));
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 }

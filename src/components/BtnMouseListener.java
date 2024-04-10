@@ -15,23 +15,31 @@ public class BtnMouseListener extends MouseAdapter {
 		MouseAdapter adapter = new MouseAdapter() {
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				btn.setBackground(LibColors.PRIMARY_ACCENT);
-				btn.setBorder(BorderFactory.createEtchedBorder());
+				if (btn.isEnabled()) {
+					btn.setBackground(LibColors.PRIMARY_ACCENT);
+					btn.setBorder(BorderFactory.createBevelBorder(1));
+				}
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				btn.setBackground(LibColors.PRIMARY_BG);
-				btn.setBorder(BorderFactory.createEmptyBorder());
+				if (btn.isEnabled()) {
+					btn.setBackground(LibColors.PRIMARY_BG);
+					btn.setBorder(BorderFactory.createBevelBorder(0));
+				}
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btn.setBackground(LibColors.PRIMARY_BG);
+				if (btn.isEnabled()) {
+					btn.setBackground(LibColors.PRIMARY_BG);
+				}
 			}
 
 			public void mouseReleased(MouseEvent e) {
-				btn.setBackground(LibColors.PRIMARY_ACCENT);
+				if (btn.isEnabled()) {
+					btn.setBackground(LibColors.PRIMARY_ACCENT);
+				}
 			}
 		};
 		return adapter;
@@ -49,33 +57,36 @@ public class BtnMouseListener extends MouseAdapter {
 			@Override
 			public void mouseExited(MouseEvent e) {
 				btn.setBorder(BorderFactory.createBevelBorder(0, Color.LIGHT_GRAY, Color.GRAY));
-				
-				if(btn.equals(Test.obj)) {
+
+				if (btn.equals(Test.obj)) {
 					btn.setOpaque(true);
 					return;
 				}
 				btn.setOpaque(false);
-//				btn.setBackground(LibColors.PRIMARY_BG);
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				btn.setOpaque(true);
-				btn.setBackground(LibColors.PRIMARY_ACCENT);
-				for(JButton b: Test.getBtns()) {
-					if(!btn.equals(b)) {
-						b.setOpaque(false);
+				for (JButton b : Test.getBtns()) {
+					if (!b.equals(btn)) {
+						b.setOpaque(false); // false -> transparent
+
+					} else {
+						b.setOpaque(true);
+						b.setBackground(LibColors.PRIMARY_ACCENT);
+
 					}
+					System.out.println("Tran> " + b.isOpaque());
 				}
+
+//				btn.setOpaque(true);
+//				btn.setBackground(LibColors.PRIMARY_ACCENT);
+				
 			}
 
 			public void mouseReleased(MouseEvent e) {
 				btn.setOpaque(true);
 				btn.setBackground(LibColors.PRIMARY_BG);
-			}
-
-			public void mouseClicked(MouseEvent e) {
-				btn.setOpaque(true);
 			}
 		};
 		return adapter;

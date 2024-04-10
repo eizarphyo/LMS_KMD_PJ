@@ -8,10 +8,11 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import components.MyBtn;
-import components.TxtFieldFocusListener;
 import controller.PublisherController;
 import model.PublisherModel;
 import utilities.AutoID;
+import utilities.MyTblFunctions;
+
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
@@ -26,15 +27,51 @@ public class PublisherDialogView extends JDialog {
 
 	private static final long serialVersionUID = 1L;
 	private static PublisherDialogView dialog;
-	private JTextField txtName;
+	private static JTextField txtName;
+	private static boolean update = false;
 
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
+//	public static void main(String[] args) {
+//		try {
+//			dialog = new PublisherDialogView();
+//			dialog.setTitle(AutoID.getPK("publisher_id", "publisher", "PUB-"));
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
+	
+	public static void showDialog() {
 		try {
 			dialog = new PublisherDialogView();
 			dialog.setTitle(AutoID.getPK("publisher_id", "publisher", "PUB-"));
+			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+			dialog.setVisible(true);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void showDialog(String id) {
+		try {
+			update = true;
+			
+			PublisherController ctl = new PublisherController();
+			PublisherModel publisher = new PublisherModel();
+
+			publisher.setId(id);
+			publisher = ctl.getOneByName(publisher);
+			
+			dialog = new PublisherDialogView();
+			
+			dialog.setTitle(id);
+			txtName.setText(publisher.getName());
+			txtName.requestFocus();
+			txtName.selectAll();
+			
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -72,7 +109,7 @@ public class PublisherDialogView extends JDialog {
 		txtName.setBounds(10, 47, 266, 25);
 		contentPanel.add(txtName);
 
-		JButton btnAdd = new JButton("Add");
+		JButton btnAdd = new JButton(update ? "Update" : "Add");
 		MyBtn.changeMyBtnStyle(btnAdd);
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -92,7 +129,12 @@ public class PublisherDialogView extends JDialog {
 					txtName.requestFocus();
 					txtName.selectAll();
 					return;
-				} else if (ctl.insert(publisher) == 1) {
+				} 
+				
+				int ok = update ? ctl.update(publisher) : ctl.insert(publisher);
+				
+				if (ok == 1) {
+					MyTblFunctions.updatePublishersTable();
 					JOptionPane.showMessageDialog(null, "Success!");
 					dispose();
 					return;
@@ -106,14 +148,5 @@ public class PublisherDialogView extends JDialog {
 		contentPanel.add(btnAdd);
 	}
 
-	public static void showDialog() {
-		try {
-			dialog = new PublisherDialogView();
-			dialog.setTitle(AutoID.getPK("publisher_id", "publisher", "PUB-"));
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+	
 }

@@ -1,5 +1,6 @@
 package components;
 
+import java.awt.Color;
 import java.awt.Font;
 
 import javax.swing.BorderFactory;
@@ -10,11 +11,13 @@ import utilities.LibColors;
 public class MyBtn {
 	
 	public static void changeMyBtnStyle(JButton btn) {
-		btn.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btn.setBackground(LibColors.PRIMARY_BG);
-		btn.setBorder(BorderFactory.createLineBorder(LibColors.PRIMARY_ACCENT));
+		btn.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		
+		btn.setBackground(btn.isEnabled() ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
 		btn.setContentAreaFilled(false);
 		btn.setOpaque(true);
+		
+		btn.setBorder(BorderFactory.createBevelBorder(0));
 		btn.setFocusPainted(false); // Remove focus indication
 
 		btn.addMouseListener(BtnMouseListener.getListener(btn));

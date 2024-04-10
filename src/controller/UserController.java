@@ -179,6 +179,7 @@ public class UserController {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, user.getUsername());
 			ps.setString(2, user.getPassword());
+
 			
 			ResultSet rs = ps.executeQuery();
 			

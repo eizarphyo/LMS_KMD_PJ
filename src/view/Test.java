@@ -7,14 +7,22 @@ import java.awt.Image;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
 import components.MyBtn;
 import controller.AuthorController;
 import controller.BookController;
 import controller.GenreController;
+import controller.PublisherController;
+import model.AuthorModel;
+import model.BookModel;
+import model.GenreModel;
+import model.PublisherModel;
 import utilities.LibColors;
 import utilities.MyTblFunctions;
 
@@ -22,21 +30,27 @@ import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
+
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
+import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class Test extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTable tbl;
-	private DefaultTableModel dtm = new DefaultTableModel();
+	public static DefaultTableModel dtm = new DefaultTableModel();
 	private JLabel lblTitle;
 
 	public static JButton obj;
@@ -45,8 +59,12 @@ public class Test extends JFrame {
 	private static JButton btnAuthors;
 	private static JButton btnGenres;
 	private static JButton btnDonators;
-	private static JButton btnStudents;
+	private static JButton btnDonation;
 	private JLabel lbl;
+	private JButton btnUpdate;
+	private JButton btnDelete;
+
+	private String selectedId;
 
 	/**
 	 * Launch the application.
@@ -63,7 +81,7 @@ public class Test extends JFrame {
 			}
 		});
 	}
-	
+
 	public static void showFrame() {
 		try {
 			Test frame = new Test();
@@ -84,17 +102,16 @@ public class Test extends JFrame {
 
 		setContentPane(contentPane);
 		contentPane.setLayout(null);
-		
+
 		java.net.URL imgURL = getClass().getResource("../images/shiba.png");
-		System.out.println(imgURL);
 		Image img = new ImageIcon(imgURL).getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
-		
+
 		ImageIcon icon = new ImageIcon(img);
-		
+
 		lbl = new JLabel("Fantastic Library");
 		lbl.setIcon(icon);
 		lbl.setOpaque(true);
-        lbl.setBackground(Color.ORANGE);
+		lbl.setBackground(Color.ORANGE);
 		lbl.setFont(new Font("Tahoma", Font.BOLD, 18));
 		lbl.setBounds(0, 0, 1270, 39);
 		contentPane.add(lbl);
@@ -110,13 +127,13 @@ public class Test extends JFrame {
 																		// box
 
 		MyBtn.changeMySideNaveStyle(btnBooks);
-		
+
 		// Make the btn selected design
 		btnBooks.setBackground(LibColors.PRIMARY_BG);
 		btnBooks.setBorder(BorderFactory.createBevelBorder(0, Color.LIGHT_GRAY, Color.GRAY));
 		obj = btnBooks;
 		btnBooks.setOpaque(true);
-		
+
 		btnBooks.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				lblTitle.setText("Book List");
@@ -127,6 +144,7 @@ public class Test extends JFrame {
 				obj = btnBooks;
 
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 
@@ -134,12 +152,12 @@ public class Test extends JFrame {
 
 		// AUTHORS BTN
 		btnAuthors = new JButton("Authors");
-		btnAuthors.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
-																			// vertical box
+		btnAuthors.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
 		MyBtn.changeMySideNaveStyle(btnAuthors);
 		btnAuthors.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
+				enableBtns(false);
 				lblTitle.setText("Author List");
 
 				String[] cols = { "ID", "Name" };
@@ -155,11 +173,12 @@ public class Test extends JFrame {
 
 		// GENRES BTN
 		btnGenres = new JButton("Genres");
-		btnGenres.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
-																		// vertical box
+		btnGenres.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+
 		MyBtn.changeMySideNaveStyle(btnGenres);
 		btnGenres.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				enableBtns(false);
 				lblTitle.setText("Genre List");
 
 				String[] cols = { "ID", "Name" };
@@ -178,12 +197,19 @@ public class Test extends JFrame {
 		MyBtn.changeMySideNaveStyle(btnPublishers);
 		btnPublishers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				enableBtns(false);
+				lblTitle.setText("Publisher List");
+
+				String[] cols = { "ID", "Name" };
+				int[] w = { 50, 80 };
+				createTable(cols, w);
+
 				obj = btnPublishers;
+				updateTable(obj.getText());
 
 			}
 		});
-		btnPublishers.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
-																			// vertical box
+		btnPublishers.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 		verticalBox.add(btnPublishers);
 
 		// DONATORS BTN
@@ -191,7 +217,14 @@ public class Test extends JFrame {
 		MyBtn.changeMySideNaveStyle(btnDonators);
 		btnDonators.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				lblTitle.setText("Donator List");
+
+				String[] cols = { "ID", "Name", "Email", "Phone", "Address" };
+				int[] w = { 10, 50, 80, 50, 100 };
+				createTable(cols, w);
+
 				obj = btnDonators;
+				updateTable(obj.getText());
 			}
 		});
 		btnDonators.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
@@ -199,40 +232,98 @@ public class Test extends JFrame {
 		verticalBox.add(btnDonators);
 
 		// STUDENTS BTN
-		btnStudents = new JButton("Students");
-		MyBtn.changeMySideNaveStyle(btnStudents);
-		btnStudents.addActionListener(new ActionListener() {
+		btnDonation = new JButton("Donation");
+		MyBtn.changeMySideNaveStyle(btnDonation);
+		btnDonation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				obj = btnStudents;
+				lblTitle.setText("Dontaion List");
+				enableBtns(false);
+
+				String[] cols = { "ID", "Donator Name", "Book Qty" };
+				int[] w = { 50, 80, 10 };
+				createTable(cols, w);
+
+				obj = btnDonation;
+				updateTable(obj.getText());
 			}
 		});
-		btnStudents.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
+		btnDonation.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
 																			// vertical box
-		verticalBox.add(btnStudents);
+		verticalBox.add(btnDonation);
 
 		// TABLE TITLE
 		lblTitle = new JLabel("");
 		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblTitle.setBounds(136, 50, 740, 25);
+		lblTitle.setBounds(136, 50, 500, 25);
 		contentPane.add(lblTitle);
 
 		// TABLE PANEL
 		JPanel panel = new JPanel();
-		panel.setBounds(136, 80, 747, 500);
+		panel.setBounds(136, 85, 1000, 500);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 747, 500);
+		scrollPane.setBounds(0, 0, 1000, 500);
 		panel.add(scrollPane);
 
-		tbl = new JTable();
+		tbl = new JTable() {
+			@Override
+			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+				Component comp = super.prepareRenderer(renderer, row, column);
+				((JComponent) comp).setBorder(BorderFactory.createEmptyBorder());
+
+//                if (isCellSelected(row, column)) {
+//                    ((JComponent) comp).setBorder(BorderFactory.createLineBorder(Color.ORANGE));
+//                } else {
+//                    ((JComponent) comp).setBorder(BorderFactory.createEmptyBorder());
+//                }
+//                DefaultTableCellRenderer cellRenderer = (DefaultTableCellRenderer) renderer;           
+//                if (column == getColumnCount() - 1) { // Check if it's the last column
+//                	cellRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
+//                } else {
+//                	cellRenderer.setHorizontalAlignment(SwingConstants.LEFT);
+//                }
+
+				return comp;
+			}
+		};
+
+		tbl.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				int row = tbl.getSelectedRow();
+				enableBtns(true);
+
+				selectedId = tbl.getValueAt(row, 0).toString();
+			}
+		});
+
+		tbl.setRowHeight(30);
+		tbl.setSelectionBackground(LibColors.PRIMARY_SELECT_BG);
+		tbl.setIntercellSpacing(new Dimension(7, 0));
+
+		// Change header height
+		JTableHeader header = tbl.getTableHeader();
+		Dimension headerPreferredSize = header.getPreferredSize();
+		headerPreferredSize.height = 35;
+		header.setPreferredSize(headerPreferredSize);
+
+		Font headerFont = header.getFont();
+		header.setFont(headerFont.deriveFont(Font.BOLD, 14));
+//        header.setBackground(new Color(255,238,178));
+
+		tbl.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		scrollPane.setViewportView(tbl);
 
 		// ADD BTN
-		JButton btnNewButton = new JButton("Add");
-		btnNewButton.addActionListener(new ActionListener() {
+		JButton btnAdd = new JButton("Add");
+		btnAdd.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		MyBtn.changeMyBtnStyle(btnAdd);
+		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				enableBtns(false);
+
 				switch (obj.getText()) {
 				case "Books":
 					BookDialogView.showDialog();
@@ -255,14 +346,90 @@ public class Test extends JFrame {
 				}
 			}
 		});
-		btnNewButton.setBounds(912, 50, 89, 23);
-		contentPane.add(btnNewButton);
-		
+		btnAdd.setBounds(830, 50, 80, 30);
+		contentPane.add(btnAdd);
+
+		// UPDATE BTN
+		btnUpdate = new JButton("Update");
+		btnUpdate.setEnabled(false);
+		MyBtn.changeMyBtnStyle(btnUpdate);
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				System.out.println("update");
+				if (selectedId.startsWith("BOK-")) {
+					BookDialogView.showDialog(selectedId);
+				} else if (selectedId.startsWith("AUT-")) {
+					AuthorDiglogView.showDialog(selectedId);
+				} else if (selectedId.startsWith("GEN-")) {
+					GenreDialogView.showDialog(selectedId);
+				} else if (selectedId.startsWith("PUB-")) {
+					PublisherDialogView.showDialog(selectedId);
+				}
+				enableBtns(false);
+				tbl.clearSelection(); // remove row selection
+			}
+		});
+		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		btnUpdate.setBounds(937, 50, 85, 30);
+		contentPane.add(btnUpdate);
+
+		// DELETE BTN
+		btnDelete = new JButton("Delete");
+		btnDelete.setEnabled(false);
+		MyBtn.changeMyBtnStyle(btnDelete);
+		btnDelete.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (selectedId.startsWith("BOK-")) {
+					BookController ctl = new BookController();
+					BookModel b = new BookModel();
+					b.setId(selectedId);
+
+					if (ctl.delete(b) == 1) {
+						MyTblFunctions.updateBooksTable();
+						enableBtns(false);
+					}
+				} else if (selectedId.startsWith("AUT-")) {
+					AuthorController ctl = new AuthorController();
+					AuthorModel a = new AuthorModel();
+					a.setId(selectedId);
+
+					if (ctl.delete(a) == 1) {
+						MyTblFunctions.updateAuthorsTable();
+						enableBtns(false);
+					}
+				} else if (selectedId.startsWith("GEN-")) {
+					GenreController ctl = new GenreController();
+					GenreModel g = new GenreModel();
+					g.setId(selectedId);
+
+					if (ctl.delete(g) == 1) {
+						MyTblFunctions.updateGenresTable();
+						enableBtns(false);
+					}
+				} else if (selectedId.startsWith("PUB-")) {
+					PublisherController ctl = new PublisherController();
+					PublisherModel p = new PublisherModel();
+					p.setId(selectedId);
+
+					if (ctl.delete(p) == 1) {
+						MyTblFunctions.updatePublishersTable();
+						enableBtns(false);
+					}
+				}
+			}
+		});
+		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		btnDelete.setBounds(1047, 50, 85, 30);
+		contentPane.add(btnDelete);
+
+		// create table
 		lblTitle.setText("Book List");
-		
 		String[] cols = { "ID", "Title", "Author", "Publisher", "Genre", "Published at", "Price", "Qty" };
 		int[] w = { 5, 50, 20, 30, 10, 20, 1, 5 };
 		createTable(cols, w);
+
+		// load data from db and update table
+		MyTblFunctions.updateBooksTable();
 	} // END of CONSTRUCTOR
 
 	public void setColumnWidth(int i, int width) {
@@ -286,19 +453,16 @@ public class Test extends JFrame {
 	private void updateTable(String tbl) {
 		switch (tbl) {
 		case "Books":
-			BookController bctl = new BookController();
-			MyTblFunctions.updateBooks(bctl.getAllBooks(), dtm);
+			MyTblFunctions.updateBooksTable();
 			break;
 		case "Authors":
-			AuthorController actl = new AuthorController();
-			MyTblFunctions.updateAuthors(actl.getAllAuthors(), dtm);
+			MyTblFunctions.updateAuthorsTable();
 			break;
 		case "Genres":
-			GenreController gctl = new GenreController();
-			MyTblFunctions.updateGenres(gctl.getAllGenres(), dtm);
+			MyTblFunctions.updateGenresTable();
 			break;
 		case "Publishers":
-
+			MyTblFunctions.updatePublishersTable();
 			break;
 		case "Donators":
 
@@ -309,8 +473,16 @@ public class Test extends JFrame {
 		}
 	}
 
+	private void enableBtns(boolean enable) {
+		btnUpdate.setEnabled(enable);
+		btnDelete.setEnabled(enable);
+
+		btnUpdate.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
+		btnDelete.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
+	}
+
 	public static JButton[] getBtns() {
-		JButton[] btns = { btnBooks, btnAuthors, btnGenres, btnPublishers, btnDonators, btnStudents };
+		JButton[] btns = { btnBooks, btnAuthors, btnGenres, btnPublishers, btnDonators, btnDonation };
 		return btns;
 	}
 }

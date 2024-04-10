@@ -5,8 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import config.DBConfig;
 import model.AuthorModel;
@@ -74,10 +77,12 @@ public class BorrowController {
 			ps.setString(1, borrow.getBorrowId());
 			
 			return ps.executeUpdate();
-		} catch (SQLException e) {
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			JOptionPane.showMessageDialog(null, "Delete Fails!\nThis Book includes in borrow history.");
+		}catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
 		}
+		return 0;
 	}
 	
 	public List<BorrowModel> getAllBorrow() {
