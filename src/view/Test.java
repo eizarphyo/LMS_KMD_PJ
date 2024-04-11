@@ -17,10 +17,12 @@ import javax.swing.table.TableColumn;
 import components.MyBtn;
 import controller.AuthorController;
 import controller.BookController;
+import controller.DonatorController;
 import controller.GenreController;
 import controller.PublisherController;
 import model.AuthorModel;
 import model.BookModel;
+import model.DonatorModel;
 import model.GenreModel;
 import model.PublisherModel;
 import utilities.LibColors;
@@ -338,7 +340,7 @@ public class Test extends JFrame {
 					PublisherDialogView.showDialog();
 					break;
 				case "Donators":
-//					DonatorDialogView.showDialog();
+					DonatorDialogView.showDialog();
 					break;
 				case "Students":
 //					StudentDialogView.showDialog();
@@ -364,7 +366,10 @@ public class Test extends JFrame {
 					GenreDialogView.showDialog(selectedId);
 				} else if (selectedId.startsWith("PUB-")) {
 					PublisherDialogView.showDialog(selectedId);
+				} else if (selectedId.startsWith("DNT-")) {
+					DonatorDialogView.showDialog(selectedId);
 				}
+				
 				enableBtns(false);
 				tbl.clearSelection(); // remove row selection
 			}
@@ -413,6 +418,15 @@ public class Test extends JFrame {
 
 					if (ctl.delete(p) == 1) {
 						MyTblFunctions.updatePublishersTable();
+						enableBtns(false);
+					}
+				} else if (selectedId.startsWith("DNT-")) {
+					DonatorController ctl = new DonatorController();
+					DonatorModel d = new DonatorModel();
+					d.setDonatorId(selectedId);
+
+					if (ctl.delete(d) == 1) {
+						MyTblFunctions.updateDonatorsTable();
 						enableBtns(false);
 					}
 				}
@@ -465,7 +479,7 @@ public class Test extends JFrame {
 			MyTblFunctions.updatePublishersTable();
 			break;
 		case "Donators":
-
+			MyTblFunctions.updateDonatorsTable();
 			break;
 		case "Students":
 

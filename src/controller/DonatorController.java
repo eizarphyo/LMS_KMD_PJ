@@ -5,8 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import config.DBConfig;
 import model.DonatorModel;
@@ -42,7 +45,7 @@ public class DonatorController {
 		}
 	}
 
-	public int update(DonatorModel donator)  {
+	public int update(DonatorModel donator) {
 		String query = "UPDATE lib.donator SET donator_name=?,phone=?,email=?,address=? WHERE donator_id=?";
 
 		PreparedStatement ps;
@@ -53,7 +56,7 @@ public class DonatorController {
 			ps.setString(3, donator.getEmail());
 			ps.setString(4, donator.getAddress());
 			ps.setString(5, donator.getDonatorId());
-			
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -68,12 +71,14 @@ public class DonatorController {
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, donator.getDonatorId());
-			
+
 			return ps.executeUpdate();
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			JOptionPane.showMessageDialog(null, "Delete Fails!\nThis Donator has donated books.");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
 		}
+		return 0;
 	}
 
 	public List<DonatorModel> getAllDonators() {
@@ -154,17 +159,17 @@ public class DonatorController {
 		}
 		return donators;
 	}
-	
+
 	public boolean hasDuplicateName(DonatorModel author) {
 		String query = "SELECT * FROM lib.donator WHERE donator_name=?";
-		
+
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, author.getDonatorName());
-			
+
 			ResultSet rs = ps.executeQuery();
-			
-			if(rs.next()) {
+
+			if (rs.next()) {
 				return true;
 			}
 		} catch (SQLException e) {

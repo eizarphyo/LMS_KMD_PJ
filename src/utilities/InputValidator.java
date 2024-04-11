@@ -1,5 +1,7 @@
 package utilities;
 
+import javax.swing.JOptionPane;
+
 public class InputValidator {
 	
 	public static boolean isAllDigits(String str) {
@@ -35,6 +37,25 @@ public class InputValidator {
 				return true;
 			}
 		}
+		return false;
+	}
+	
+	public static boolean hasValidEmailFormat(String str) {
+		int dot = str.indexOf(".");
+		int at = str.indexOf("@");
+
+		if (dot < 0 || at < 0 || str.indexOf(" ") > 0) {
+			return false;
+		}
+
+		String name = str.substring(0, at);
+		String domain = str.substring(at + 1, dot);
+		String com = str.substring(dot + 1);
+
+		if (!name.trim().equals("") && com.equals("com") && !containsSpecialCharacters(name) && !containsSpecialCharacters(domain)) {
+			return true;
+		}
+
 		return false;
 	}
 }

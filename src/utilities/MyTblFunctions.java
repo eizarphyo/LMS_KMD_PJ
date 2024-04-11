@@ -6,10 +6,12 @@ import javax.swing.table.DefaultTableModel;
 
 import controller.AuthorController;
 import controller.BookController;
+import controller.DonatorController;
 import controller.GenreController;
 import controller.PublisherController;
 import model.AuthorModel;
 import model.BookModel;
+import model.DonatorModel;
 import model.GenreModel;
 import model.PublisherModel;
 import view.Test;
@@ -49,7 +51,6 @@ public class MyTblFunctions {
 		for(AuthorModel author: authors) {
 			row[0] = author.getId();
 			row[1] = author.getName();
-			System.out.println(row[1]);
 			dtm.addRow(row);
 		}
 	} 
@@ -87,7 +88,25 @@ public class MyTblFunctions {
 		}
 	} 
 	
-	
+	public static void updateDonatorsTable() {
+		DefaultTableModel dtm = Test.dtm;
+		dtm.setRowCount(0);
+		
+		DonatorController actl = new DonatorController();
+		List<DonatorModel> donators = actl.getAllDonators();
+		
+		String[] row = new String[5];
+
+		for(DonatorModel donator: donators) {
+			row[0] = donator.getDonatorId();
+			row[1] = donator.getDonatorName();
+			row[2] = donator.getEmail();
+			row[3] = donator.getPhone();
+			row[4] = donator.getAddress();
+			
+			dtm.addRow(row);
+		}
+	} 
 	
 	
 }
