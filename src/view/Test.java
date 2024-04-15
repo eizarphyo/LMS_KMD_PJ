@@ -67,6 +67,7 @@ public class Test extends JFrame {
 	private JButton btnDelete;
 
 	private String selectedId;
+	private JLabel lblInfo;
 
 	/**
 	 * Launch the application.
@@ -77,6 +78,7 @@ public class Test extends JFrame {
 				try {
 					Test frame = new Test();
 					frame.setVisible(true);
+					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // set the frame to be maximized
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -87,6 +89,7 @@ public class Test extends JFrame {
 	public static void showFrame() {
 		try {
 			Test frame = new Test();
+			frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // set the frame to be maximized
 			frame.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -98,6 +101,7 @@ public class Test extends JFrame {
 	 */
 	public Test() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
 		setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -115,19 +119,17 @@ public class Test extends JFrame {
 		lbl.setOpaque(true);
 		lbl.setBackground(Color.ORANGE);
 		lbl.setFont(new Font("Tahoma", Font.BOLD, 18));
-		lbl.setBounds(0, 0, 1270, 39);
+		lbl.setBounds(0, 0, 1300, 50);
 		contentPane.add(lbl);
 
 		Box verticalBox = Box.createVerticalBox();
-		verticalBox.setBounds(0, 50, 126, 263);
+		verticalBox.setBounds(0, 70, 126, 263);
 //		verticalBox.setBorder(BorderFactory.createLineBorder(getForeground()));
 		contentPane.add(verticalBox);
 
 		// BOOKS BTN
 		btnBooks = new JButton("Books");
-		btnBooks.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the vertical
-																		// box
-
+		btnBooks.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 		MyBtn.changeMySideNaveStyle(btnBooks);
 
 		// Make the btn selected design
@@ -154,6 +156,7 @@ public class Test extends JFrame {
 
 		// AUTHORS BTN
 		btnAuthors = new JButton("Authors");
+		
 		btnAuthors.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
 
 		MyBtn.changeMySideNaveStyle(btnAuthors);
@@ -233,8 +236,8 @@ public class Test extends JFrame {
 																			// vertical box
 		verticalBox.add(btnDonators);
 
-		// STUDENTS BTN
-		btnDonation = new JButton("Donation");
+		// DONTATION BTN
+		btnDonation = new JButton("Donations");
 		MyBtn.changeMySideNaveStyle(btnDonation);
 		btnDonation.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -252,16 +255,28 @@ public class Test extends JFrame {
 		btnDonation.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30)); // Set max size equal to max size of the
 																			// vertical box
 		verticalBox.add(btnDonation);
+		
+		// BORROW BTN
+		JButton btnBorrow = new JButton("Borrows");
+		MyBtn.changeMySideNaveStyle(btnBorrow);
+		btnBorrow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+		verticalBox.add(btnBorrow);
+		
+		// RETURN BTN
+		JButton btnReturn = new JButton("Returns");
+		MyBtn.changeMySideNaveStyle(btnReturn);
+		btnReturn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 30));
+		verticalBox.add(btnReturn);
 
 		// TABLE TITLE
 		lblTitle = new JLabel("");
 		lblTitle.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblTitle.setBounds(136, 50, 500, 25);
+		lblTitle.setBounds(136, 105, 500, 25);
 		contentPane.add(lblTitle);
 
 		// TABLE PANEL
 		JPanel panel = new JPanel();
-		panel.setBounds(136, 85, 1000, 500);
+		panel.setBounds(136, 135, 1000, 500);
 		contentPane.add(panel);
 		panel.setLayout(null);
 
@@ -324,6 +339,7 @@ public class Test extends JFrame {
 		MyBtn.changeMyBtnStyle(btnAdd);
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				
 				enableBtns(false);
 
 				switch (obj.getText()) {
@@ -348,7 +364,7 @@ public class Test extends JFrame {
 				}
 			}
 		});
-		btnAdd.setBounds(830, 50, 80, 30);
+		btnAdd.setBounds(830, 100, 80, 30);
 		contentPane.add(btnAdd);
 
 		// UPDATE BTN
@@ -357,7 +373,6 @@ public class Test extends JFrame {
 		MyBtn.changeMyBtnStyle(btnUpdate);
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println("update");
 				if (selectedId.startsWith("BOK-")) {
 					BookDialogView.showDialog(selectedId);
 				} else if (selectedId.startsWith("AUT-")) {
@@ -371,11 +386,10 @@ public class Test extends JFrame {
 				}
 				
 				enableBtns(false);
-				tbl.clearSelection(); // remove row selection
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnUpdate.setBounds(937, 50, 85, 30);
+		btnUpdate.setBounds(937, 100, 85, 30);
 		contentPane.add(btnUpdate);
 
 		// DELETE BTN
@@ -433,11 +447,16 @@ public class Test extends JFrame {
 			}
 		});
 		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnDelete.setBounds(1047, 50, 85, 30);
+		btnDelete.setBounds(1047, 100, 85, 30);
 		contentPane.add(btnDelete);
 
 		// create table
 		lblTitle.setText("Book List");
+		
+		lblInfo = new JLabel("Add data and Select any table row to update and delete.");
+		lblInfo.setFont(new Font("Tahoma", Font.PLAIN, 15));
+		lblInfo.setBounds(136, 70, 1000, 25);
+		contentPane.add(lblInfo);
 		String[] cols = { "ID", "Title", "Author", "Publisher", "Genre", "Published at", "Price", "Qty" };
 		int[] w = { 5, 50, 20, 30, 10, 20, 1, 5 };
 		createTable(cols, w);
@@ -493,6 +512,10 @@ public class Test extends JFrame {
 
 		btnUpdate.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
 		btnDelete.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
+		
+		if(!enable) {
+			tbl.clearSelection();	// remove table row selection
+		}
 	}
 
 	public static JButton[] getBtns() {

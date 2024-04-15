@@ -24,7 +24,7 @@ public class BookController {
 	}
 
 	public int insert(BookModel book) {
-		String query = "INSERT INTO lib.book (book_id, title, author_id, genre_id, publisher_id, published_yr, price, qty) VALUES (?,?,?,?,?,?,?,?)";
+		String query = "INSERT INTO lib.book (book_id, title, author_id, genre_id, publisher_id, published_yr, price, qty, image) VALUES (?,?,?,?,?,?,?,?, ?)";
 
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
@@ -37,6 +37,7 @@ public class BookController {
 			ps.setInt(6, book.getPuplishedYr());
 			ps.setInt(7, book.getPrice());
 			ps.setInt(8, book.getQty());
+			ps.setBytes(9, book.getImage());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -46,7 +47,7 @@ public class BookController {
 	}
 
 	public int update(BookModel book) {
-		String query = "UPDATE lib.book SET title=?, author_id=?, genre_id=?, publisher_id=?, published_yr=?, price=?, qty=? WHERE book_id=?";
+		String query = "UPDATE lib.book SET title=?, author_id=?, genre_id=?, publisher_id=?, published_yr=?, price=?, qty=?, image=? WHERE book_id=?";
 
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
@@ -58,13 +59,15 @@ public class BookController {
 			ps.setInt(5, book.getPuplishedYr());
 			ps.setInt(6, book.getPrice());
 			ps.setInt(7, book.getQty());
-			ps.setString(8, book.getId());
-
+			ps.setBytes(8, book.getImage());
+			ps.setString(9, book.getId());
+			
 			return ps.executeUpdate();
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
 		}
+		return 0;
 	}
 
 	public int delete(BookModel book) {
@@ -126,6 +129,7 @@ public class BookController {
 				b.setPuplishedYr(rs.getInt("published_yr"));
 				b.setPrice(rs.getInt("price"));
 				b.setQty(rs.getInt("qty"));
+				b.setImage(rs.getBytes("image"));
 
 				books.add(b);
 			}
@@ -160,6 +164,7 @@ public class BookController {
 				b.setPuplishedYr(rs.getInt("published_yr"));
 				b.setPrice(rs.getInt("price"));
 				b.setQty(rs.getInt("qty"));
+				b.setImage(rs.getBytes("image"));
 
 				return b;
 			}
@@ -169,4 +174,19 @@ public class BookController {
 		return null;
 	}
 
+	
+	public int updateQty(BookModel book) {
+		String query = "UPDATE lib.book SET qty=? WHERE book_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setInt(1, book.getQty());
+			ps.setString(2, book.getId());
+			return ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 }

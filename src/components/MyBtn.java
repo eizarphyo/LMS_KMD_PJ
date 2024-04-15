@@ -29,6 +29,8 @@ public class MyBtn {
 //        btn.setBorderPainted(false); // Hide the border
         btn.setFocusPainted(false); // Remove focus indication
         btn.setBorder(BorderFactory.createBevelBorder(0));
+//        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40)); // Set max size equal to max size of the vertical box
+        btn.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
         btn.addMouseListener(BtnMouseListener.getSideNavListener(btn));
 	}

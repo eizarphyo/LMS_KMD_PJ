@@ -1,10 +1,14 @@
 package view;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
@@ -24,13 +28,21 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import java.awt.event.ActionListener;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.Cursor;
 
 public class BookDialogView extends JDialog {
 
@@ -45,6 +57,9 @@ public class BookDialogView extends JDialog {
 	private static JComboBox<String> cboAuthor;
 	private static BookDialogView dialog;
 	private static boolean update = false;
+	private static JLabel lblImg;
+	
+	private byte[] imgBytes;
 
 	/**
 	 * Launch the application.
@@ -91,6 +106,19 @@ public class BookDialogView extends JDialog {
 			cboPublisher.setSelectedItem(b.getPublisherName());
 			txtPubYr.setText(b.getPuplishedYr() + "");
 			txtPrice.setText(b.getPrice() + "");
+			
+			if(b.getImage() != null) {
+				// Convert the byte array to an Image object
+                Image image = Toolkit.getDefaultToolkit().createImage(b.getImage()).getScaledInstance(100, 110, Image.SCALE_SMOOTH);
+
+                // Scale the image if necessary
+//                Image scaledImage = image.getScaledInstance(200, 200, Image.SCALE_SMOOTH);
+
+                // Set the image to the JLabel
+                lblImg.setText("");
+				lblImg.setOpaque(false);
+				lblImg.setIcon(new ImageIcon(image));	
+			} 
 
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -102,7 +130,7 @@ public class BookDialogView extends JDialog {
 	 * Create the dialog.
 	 */
 	public BookDialogView() {
-		setBounds(100, 100, 450, 400);
+		setBounds(100, 100, 450, 516);
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
 		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
@@ -115,7 +143,7 @@ public class BookDialogView extends JDialog {
 
 		JLabel lblTitle = new JLabel("Title:");
 		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblTitle.setBounds(55, 50, 100, 20);
+		lblTitle.setBounds(55, 180, 100, 20);
 		lblTitle.requestFocus();
 		contentPanel.add(lblTitle);
 
@@ -123,62 +151,62 @@ public class BookDialogView extends JDialog {
 		txtTitle.addFocusListener(TxtFieldFocusListener.getFocusListener(txtTitle));
 
 		txtTitle.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtTitle.setBounds(179, 50, 200, 20);
+		txtTitle.setBounds(179, 180, 200, 20);
 		contentPanel.add(txtTitle);
 		txtTitle.setColumns(10);
 
 		JLabel lblAuthor = new JLabel("Author:");
 		lblAuthor.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblAuthor.setBounds(55, 95, 100, 20);
+		lblAuthor.setBounds(55, 220, 100, 20);
 		contentPanel.add(lblAuthor);
 
 		cboAuthor = new JComboBox<String>();
 		cboAuthor.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboAuthor.setBounds(179, 96, 200, 20);
+		cboAuthor.setBounds(179, 220, 200, 20);
 		contentPanel.add(cboAuthor);
 
 		JLabel lblGenre = new JLabel("Genre:");
 		lblGenre.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblGenre.setBounds(55, 130, 100, 20);
+		lblGenre.setBounds(55, 260, 100, 20);
 		contentPanel.add(lblGenre);
 
 		cboGenre = new JComboBox<String>();
 		cboGenre.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboGenre.setBounds(179, 131, 200, 20);
+		cboGenre.setBounds(179, 260, 200, 20);
 		contentPanel.add(cboGenre);
 
 		JLabel lblPublisher = new JLabel("Publisher:");
 		lblPublisher.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblPublisher.setBounds(55, 170, 100, 20);
+		lblPublisher.setBounds(55, 300, 100, 20);
 		contentPanel.add(lblPublisher);
 
 		cboPublisher = new JComboBox<String>();
 		cboPublisher.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboPublisher.setBounds(179, 171, 200, 20);
+		cboPublisher.setBounds(179, 300, 200, 20);
 //		cboPublisher.setBackground(LibColors.PRIMARY_ACCENT);
 		contentPanel.add(cboPublisher);
 
 		JLabel lblPublishedYr = new JLabel("Published Year:");
 		lblPublishedYr.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblPublishedYr.setBounds(55, 210, 100, 20);
+		lblPublishedYr.setBounds(55, 340, 100, 20);
 		contentPanel.add(lblPublishedYr);
 
 		txtPubYr = new JTextField();
 		txtPubYr.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPubYr));
 		txtPubYr.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtPubYr.setBounds(179, 210, 200, 20);
+		txtPubYr.setBounds(179, 340, 200, 20);
 		contentPanel.add(txtPubYr);
 		txtPubYr.setColumns(10);
 
 		JLabel lblNewLabel = new JLabel("Price:");
 		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		lblNewLabel.setBounds(55, 255, 100, 20);
+		lblNewLabel.setBounds(55, 380, 100, 20);
 		contentPanel.add(lblNewLabel);
 
 		txtPrice = new JTextField();
 		txtPrice.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPrice));
 		txtPrice.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtPrice.setBounds(179, 255, 200, 20);
+		txtPrice.setBounds(179, 380, 200, 20);
 		contentPanel.add(txtPrice);
 		txtPrice.setColumns(10);
 
@@ -202,13 +230,15 @@ public class BookDialogView extends JDialog {
 				book.setPrice(Integer.parseInt(txtPrice.getText()));
 				book.setPuplishedYr(Integer.parseInt(txtPubYr.getText()));
 				book.setQty(0);
+				book.setImage(imgBytes);
 
 				if (!update && ctl.hasDuplicate(book)) {
 					JOptionPane.showMessageDialog(null, "Book Already Exists!");
 					return;
 				}
-				
+
 				int ok = update ? ctl.update(book) : ctl.insert(book);
+				System.out.println(ok);
 				if (ok == 1) {
 					MyTblFunctions.updateBooksTable();
 					JOptionPane.showMessageDialog(null, "Success!");
@@ -222,7 +252,7 @@ public class BookDialogView extends JDialog {
 		});
 		MyBtn.changeMyBtnStyle(btnAdd);
 		btnAdd.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnAdd.setBounds(175, 309, 89, 25);
+		btnAdd.setBounds(179, 435, 89, 27);
 		contentPanel.add(btnAdd);
 
 		JLabel lbl = new JLabel("Book Entry");
@@ -231,9 +261,75 @@ public class BookDialogView extends JDialog {
 		lbl.setBounds(10, 10, 416, 25);
 		contentPanel.add(lbl);
 
+		lblImg = new JLabel("upload image");
+		lblImg.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lblImg.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				chooseImage();
+			}
+		});
+		lblImg.setOpaque(true);
+		lblImg.setBackground(new Color(221,221,221)
+);
+		lblImg.setHorizontalAlignment(SwingConstants.CENTER);
+		lblImg.setBounds(168, 46, 100, 110);
+		contentPanel.add(lblImg);
+
 		fillComboBoxes();
 
 	}
+
+	private void chooseImage() {
+		// Create file chooser
+		JFileChooser fileChooser = new JFileChooser();
+		// Only allow image files to be selected
+		fileChooser.setFileFilter(new javax.swing.filechooser.FileFilter() {
+			public boolean accept(File file) {
+				String filename = file.getName().toLowerCase();
+				return filename.endsWith(".jpg") || filename.endsWith(".png") || filename.endsWith(".gif")
+						|| file.isDirectory();
+			}
+
+			public String getDescription() {
+				return "Image Files";
+			}
+		});
+
+		// Show file chooser dialog
+		int result = fileChooser.showOpenDialog(this);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			try {
+				// Get selected file
+                File selectedFile = fileChooser.getSelectedFile();
+                // Read the image from file
+                imgBytes = readImageAsBytes(selectedFile);
+                
+				Image image = ImageIO.read(selectedFile).getScaledInstance(100, 110, Image.SCALE_SMOOTH);
+				
+				lblImg.setText("");
+				lblImg.setOpaque(false);
+				// Set the image to the JLabel
+				lblImg.setIcon(new ImageIcon(image));
+			} catch (Exception ex) {
+				ex.printStackTrace();
+				JOptionPane.showMessageDialog(this, "Error loading image", "Error", JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+
+	private byte[] readImageAsBytes(File file) throws IOException {
+        FileInputStream fis = new FileInputStream(file);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int bytesRead;
+        while ((bytesRead = fis.read(buffer)) != -1) {
+            bos.write(buffer, 0, bytesRead);
+        }
+        fis.close();
+        bos.close();
+        return bos.toByteArray();
+    }
 
 	private boolean hasValidInputs() {
 		if (txtTitle.getText().isBlank() || txtPrice.getText().isBlank() || txtPubYr.getText().isBlank()
@@ -242,7 +338,11 @@ public class BookDialogView extends JDialog {
 			JOptionPane.showMessageDialog(null, "Please fill the required fields first");
 			txtTitle.requestFocus();
 			return false;
-		} else if (!InputValidator.isAllDigits(txtPrice.getText())) {
+		} else if (lblImg.getIcon() == null) {
+			JOptionPane.showMessageDialog(null, "Please upload the Book's cover");
+			return false;
+		}
+		else if (!InputValidator.isAllDigits(txtPrice.getText())) {
 			JOptionPane.showMessageDialog(null, "Book Price must be number only");
 			txtPrice.requestFocus();
 			txtPrice.selectAll();

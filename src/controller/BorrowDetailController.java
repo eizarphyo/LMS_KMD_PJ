@@ -22,14 +22,14 @@ public class BorrowDetailController {
 	}
 
 	public int insert(BorrowDetailModel borrowdetail) {
-		String query = "INSERT INTO lib.borrow_details (borrow_id,book_id) VALUES (?, ?)";
+		String query = "INSERT INTO lib.borrow_details (borrow_id,book_id, is_returned) VALUES (?, ?, ?)";
 
 		PreparedStatement ps;
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setString(1, borrowdetail.getBookId());
-			ps.setString(2, borrowdetail.getBorrowId());
-			
+			ps.setString(1, borrowdetail.getBorrowId());
+			ps.setString(2, borrowdetail.getBookId());
+			ps.setBoolean(3, borrowdetail.isReturned());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {

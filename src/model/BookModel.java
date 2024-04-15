@@ -9,6 +9,7 @@ public class BookModel {
 	private int puplishedYr;
 	private int price;
 	private int qty;
+	private byte[] image;
 	
 	private String authorName;
 	private String genreName;
@@ -79,6 +80,12 @@ public class BookModel {
 	}
 	public void setPublisherName(String publisherName) {
 		this.publisherName = publisherName;
+	}
+	public byte[] getImage() {
+		return image;
+	}
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 	
 	

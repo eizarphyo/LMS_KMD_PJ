@@ -25,6 +25,8 @@ import javax.swing.SwingConstants;
 import javax.swing.JPasswordField;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 
 public class AdminLogin extends JDialog {
 
@@ -32,6 +34,7 @@ public class AdminLogin extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private JButton btnLogin;
 	private JPasswordField txtPass;
+	private JTextField txtName;
 
 	/**
 	 * Launch the application.
@@ -83,7 +86,7 @@ public class AdminLogin extends JDialog {
 		lblName.setBounds(53, 63, 75, 20);
 		contentPanel.add(lblName);
 
-		JTextField txtName = new JTextField();
+		txtName = new JTextField();
 		txtName.addFocusListener(TxtFieldFocusListener.getFocusListener(txtName));
 		txtName.setBounds(149, 64, 150, 20);
 		contentPanel.add(txtName);
@@ -102,27 +105,39 @@ public class AdminLogin extends JDialog {
 		btnLogin.addActionListener(new ActionListener() {
 
 			public void actionPerformed(ActionEvent e) {
-				if (!txtName.getText().isBlank() && txtPass.getPassword().length > 0) {
-					UserController ctl = new UserController();
-					UserModel user = new UserModel();
-					user.setUsername(txtName.getText());
-					user.setPassword(new String(txtPass.getPassword()));
-					
-					if(ctl.login(user)) {
-						Test.showFrame();
-						dispose();
-					} else {
-						JOptionPane.showMessageDialog(null, "Username and Passord combination is incorrect");
-					}
-				}
+				login();
 			}
 		});
 
 		contentPanel.add(btnLogin);
 
 		txtPass = new JPasswordField();
+		txtPass.addKeyListener(new KeyAdapter() {
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+					login();
+                }
+			}
+		});
 		txtPass.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPass));
 		txtPass.setBounds(149, 107, 150, 20);
 		contentPanel.add(txtPass);
+	}
+	
+	private void login() {
+		if (!txtName.getText().isBlank() && txtPass.getPassword().length > 0) {
+			UserController ctl = new UserController();
+			UserModel user = new UserModel();
+			user.setUsername(txtName.getText());
+			user.setPassword(new String(txtPass.getPassword()));
+			
+			if(ctl.login(user)) {
+				Test.showFrame();
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(null, "Username and Passord combination is incorrect");
+			}
+		}
 	}
 }
