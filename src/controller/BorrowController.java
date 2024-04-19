@@ -33,7 +33,7 @@ public class BorrowController {
 	}
 
 	public int insert(BorrowModel borrow) {
-		String query = "INSERT INTO lib.borrow (borrow_id,stu_id,borrowed_at,borrowed_qty, qty_to_be_returned, is_all_returned) VALUES (?, ?, ?, ?, ?, ?)";
+		String query = "INSERT INTO lib.borrow (borrow_id,stu_id,borrowed_at,borrowed_qty, qty_to_be_returned, returned_qty, is_all_returned) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
 		PreparedStatement ps;
 		try {
@@ -43,7 +43,8 @@ public class BorrowController {
 			ps.setDate(3, new java.sql.Date(borrow.getBorrowAt().getTime()));
 			ps.setInt(4, borrow.getBorrowQty());
 			ps.setInt(5, borrow.getQtyToBeReturned());
-			ps.setBoolean(6, borrow.isAllReturned());
+			ps.setInt(6, borrow.getReturnedQty());
+			ps.setBoolean(7, borrow.isAllReturned());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -53,7 +54,7 @@ public class BorrowController {
 	}
 
 	public int update(BorrowModel borrow) {
-		String query = "UPDATE lib.borrow SET stu_id=?, borrowed_at=?, borrowed_qty=?, qty_to_be_returned=?, is_all_returned=? WHERE borrow_id=?";
+		String query = "UPDATE lib.borrow SET stu_id=?, borrowed_at=?, borrowed_qty=?, qty_to_be_returned=?, returned_qty=? is_all_returned=? WHERE borrow_id=?";
 
 		PreparedStatement ps;
 		try {
@@ -63,7 +64,8 @@ public class BorrowController {
 			ps.setInt(3, borrow.getBorrowQty());
 			ps.setInt(4, borrow.getQtyToBeReturned());
 			ps.setBoolean(5, borrow.isAllReturned());
-			ps.setString(6, borrow.getBorrowId());
+			ps.setInt(6, borrow.getReturnedQty());
+			ps.setString(7, borrow.getBorrowId());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -107,6 +109,7 @@ public class BorrowController {
 				borrow.setBorrowAt(rs.getDate("borrowed_at"));
 				borrow.setBorrowQty(rs.getInt("borrowed_qty"));
 				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
+				borrow.setReturnedQty(rs.getInt("returned_qty"));
 				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
 
 				StudentModel student = new StudentModel();
@@ -120,7 +123,40 @@ public class BorrowController {
 		return borrowlist;
 	}
 
-	public BorrowModel getOneBorrowById(BorrowModel data) {
+//	public BorrowModel getOneBorrowById(BorrowModel data) {
+//		String query = "SELECT * FROM lib.borrow WHERE borrow_id=?";
+//
+//		BorrowModel borrow = new BorrowModel();
+//
+//		PreparedStatement ps;
+//		try {
+//			ps = (PreparedStatement) con.prepareStatement(query);
+//			ps.setString(1, data.getBorrowId());
+//
+//			ResultSet rs = ps.executeQuery();
+//
+//			if (rs.next()) {
+//
+//				borrow.setBorrowId(rs.getString("borrow_id"));
+//				borrow.setStuId(rs.getString("stu_id"));
+//				borrow.setBorrowAt(rs.getDate("borrowed_at"));
+//				borrow.setBorrowQty(rs.getInt("borrowed_qty"));
+//				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
+//	borrow.setReturnedQty(rs.getInt("returned_qty"));
+//				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
+//
+//				StudentModel student = new StudentModel();
+//				student.setStuId(borrow.getStuId());
+//			}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		}
+//		return borrow;
+//	}
+//
+
+	// static method
+	public static BorrowModel getOneBorrowById(String id) {
 		String query = "SELECT * FROM lib.borrow WHERE borrow_id=?";
 
 		BorrowModel borrow = new BorrowModel();
@@ -128,7 +164,7 @@ public class BorrowController {
 		PreparedStatement ps;
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setString(1, data.getBorrowId());
+			ps.setString(1, id);
 
 			ResultSet rs = ps.executeQuery();
 
@@ -139,6 +175,7 @@ public class BorrowController {
 				borrow.setBorrowAt(rs.getDate("borrowed_at"));
 				borrow.setBorrowQty(rs.getInt("borrowed_qty"));
 				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
+				borrow.setReturnedQty(rs.getInt("returned_qty"));
 				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
 
 				StudentModel student = new StudentModel();
@@ -148,6 +185,60 @@ public class BorrowController {
 			e.printStackTrace();
 		}
 		return borrow;
+	}
+
+	public List<BorrowModel> getAllUnfinishedBorrowsByStudentId(String stuId) {
+		String query = "SELECT * FROM lib.borrow WHERE stu_id=? AND is_all_returned=? ORDER BY borrow_id DESC";
+		List<BorrowModel> borrowlist = new ArrayList<>();
+
+		PreparedStatement ps;
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, stuId);
+			ps.setBoolean(2, false);
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				BorrowModel borrow = new BorrowModel();
+
+				borrow.setBorrowId(rs.getString("borrow_id"));
+				borrow.setStuId(rs.getString("stu_id"));
+//				borrow.setBorrowAt(rs.getString("borrowed_at"));
+				borrow.setBorrowAt(rs.getDate("borrowed_at"));
+				borrow.setBorrowQty(rs.getInt("borrowed_qty"));
+				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
+				borrow.setReturnedQty(rs.getInt("returned_qty"));
+				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
+
+				StudentModel student = new StudentModel();
+				student.setStuId(borrow.getStuId());
+
+				borrowlist.add(borrow);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return borrowlist;
+	}
+	
+	// static methods
+	
+	public static int updateReturnQty(BorrowModel borrow) {
+		String query = "UPDATE lib.borrow SET qty_to_be_returned=?, returned_qty=?, is_all_returned=? WHERE borrow_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setInt(1, borrow.getQtyToBeReturned());
+			ps.setInt(2, borrow.getReturnedQty());
+			ps.setBoolean(3, borrow.isAllReturned());
+			ps.setString(4, borrow.getBorrowId());
+
+			return ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
 	}
 
 }

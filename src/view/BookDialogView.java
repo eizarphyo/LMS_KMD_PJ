@@ -161,8 +161,9 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(lblAuthor);
 
 		cboAuthor = new JComboBox<String>();
+		MyComboBox.changeMyCboStyle(cboAuthor);
 		cboAuthor.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboAuthor.setBounds(179, 220, 200, 20);
+		cboAuthor.setBounds(179, 220, 200, 25);
 		contentPanel.add(cboAuthor);
 
 		JLabel lblGenre = new JLabel("Genre:");
@@ -171,8 +172,9 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(lblGenre);
 
 		cboGenre = new JComboBox<String>();
+		MyComboBox.changeMyCboStyle(cboGenre);
 		cboGenre.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboGenre.setBounds(179, 260, 200, 20);
+		cboGenre.setBounds(179, 260, 200, 25);
 		contentPanel.add(cboGenre);
 
 		JLabel lblPublisher = new JLabel("Publisher:");
@@ -181,8 +183,9 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(lblPublisher);
 
 		cboPublisher = new JComboBox<String>();
+		MyComboBox.changeMyCboStyle(cboPublisher);
 		cboPublisher.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboPublisher.setBounds(179, 300, 200, 20);
+		cboPublisher.setBounds(179, 300, 200, 25);
 //		cboPublisher.setBackground(LibColors.PRIMARY_ACCENT);
 		contentPanel.add(cboPublisher);
 

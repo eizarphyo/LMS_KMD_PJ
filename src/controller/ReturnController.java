@@ -40,7 +40,7 @@ public class ReturnController {
 			ps.setString(1, returned.getReturnId());
 			ps.setString(2, returned.getBorrowId());
 			ps.setString(3, returned.getStuId());
-			ps.setString(4, returned.getReturnedAt());
+			ps.setDate(4, returned.getReturnedAt());
 			ps.setInt(5, returned.getReturnedQty());
 			ps.setInt(6, returned.getLateFine());
 			ps.setInt(7, returned.getTotalFine());
@@ -60,7 +60,7 @@ public class ReturnController {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, returned.getBorrowId());
 			ps.setString(2, returned.getStuId());
-			ps.setString(3, returned.getReturnedAt());
+			ps.setDate(3, returned.getReturnedAt());
 			ps.setInt(4, returned.getReturnedQty());
 			ps.setInt(5, returned.getLateFine());
 			ps.setInt(6, returned.getTotalFine());
@@ -103,7 +103,7 @@ public class ReturnController {
 				returned.setReturnId(rs.getString("return_id"));
 				returned.setBorrowId(rs.getString("borrow_id"));
 				returned.setStuId(rs.getString("stu_id"));
-				returned.setReturnedAt(rs.getString("returned_at"));
+				returned.setReturnedAt(rs.getDate("returned_at"));
 				returned.setReturnedQty(rs.getInt("returned_qty"));
 				returned.setLateFine(rs.getInt("late_fine"));
 				returned.setTotalFine(rs.getInt("total_fine"));
@@ -139,7 +139,7 @@ public class ReturnController {
 				returnlist.setReturnId(rs.getString("return_id"));
 				returnlist.setBorrowId(rs.getString("borrow_id"));
 				returnlist.setStuId(rs.getString("stu_id"));
-				returnlist.setReturnedAt(rs.getString("returned_at"));
+				returnlist.setReturnedAt(rs.getDate("returned_at"));
 				returnlist.setReturnedQty(rs.getInt("returned_qty"));
 				returnlist.setLateFine(rs.getInt("late_fine"));
 				returnlist.setTotalFine(rs.getInt("total_fine"));

@@ -10,10 +10,9 @@ import com.mysql.jdbc.PreparedStatement;
 
 import config.DBConfig;
 import model.DonationDetailModel;
-import model.DonatorModel;
 
 public class DonationDetailController {
-	private static Connection con = null;
+	private static Connection con;
 
 	static {
 		DBConfig config = new DBConfig();
@@ -24,15 +23,15 @@ public class DonationDetailController {
 		}
 	}
 
-	public int insert(DonationDetailModel donationdetail) {
-		String query = "INSERT INTO lib.donation_details (donation_id, book_id, donated_qty) VALUES (?, ?, ?)";
+	public int insert(DonationDetailModel detail) {
+		String query = "INSERT INTO lib.donation_details (donation_id, book_id, donated_qty) VALUES (?,?,?)";
 
-		PreparedStatement ps;
 		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setString(1, donationdetail.getDonationId());
-			ps.setString(2, donationdetail.getBookId());
-			ps.setString(3, donationdetail.getDonatedQty());
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, detail.getDonationId());
+			ps.setString(2, detail.getBookId());
+			ps.setInt(3, detail.getQty());
 			
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -41,5 +40,149 @@ public class DonationDetailController {
 		}
 	}
 
+	public int update(DonationDetailModel detail) {
+		String query = "UPDATE lib.donation_details SET book_id=?, donated_qty=? WHERE donation_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, detail.getBookId());
+			ps.setInt(2, detail.getQty());
+			ps.setString(4, detail.getDonationId());
+			
+
+			return ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	public int delete(DonationDetailModel detail) {
+		String query = "DELETE FROM lib.donation_details WHERE donation_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, detail.getDonationId());
+
+			return ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
+	public boolean hasDuplicate(DonationDetailModel detail) {
+		String query = "SELECT * FROM lib.donation_details WHERE donation_id=? AND book_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, detail.getDonationId());
+			ps.setString(2, detail.getBookId());
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	public List<DonationDetailModel> getAllDonation() {
+		String query = "SELECT donation_details.*, donation.donation_id, book.title FROM lib.donation_details\r\n"
+				+ "INNER JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
+				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id\r\n"
+				+ "ORDER BY donation_details.donation_id ASC;";
+		List<DonationDetailModel> detail = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				DonationDetailModel dd = new DonationDetailModel();
+				dd.setDonationId(rs.getString("donation_id"));
+				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setBookId(rs.getString("book_id"));
+				dd.setBookName(rs.getString("title"));				
+				dd.setQty(rs.getInt("donated_qty"));
+
+				detail.add(dd);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return detail;
+	}
 	
+	public DonationDetailModel getOneDonationById(DonationDetailModel detail) {
+		String query = "SELECT donation_details.*, donation.donation_id, book.title FROM lib.donation_details\r\n"
+				+ "INNER JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
+				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id\r\n"
+				+ "ORDER BY donation_details.donation_id ASC;";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, detail.getDonationId());
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				DonationDetailModel dd = new DonationDetailModel();
+				dd.setDonationId(rs.getString("donation_id"));
+				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setBookId(rs.getString("book_id"));
+				dd.setBookName(rs.getString("title"));				
+				dd.setQty(rs.getInt("donated_qty"));
+
+				return dd;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static String getIdByName(String name) {
+		String query = "SELECT * FROM lib.book WHERE title=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("book_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public static String getIdById(String id) {
+		String query = "SELECT * FROM lib.donation WHERE donator_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, id);
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("donation_id");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	
+	
+
 }

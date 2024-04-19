@@ -12,7 +12,7 @@ public class ChangeDate {
 		this.today = new Date();
 	}
 
-	public static String toMySqlDateFormat() {
+	public static String toMyDateFormat() {
 		LocalDate now = LocalDate.now();
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		return now.format(formatter);
@@ -22,5 +22,11 @@ public class ChangeDate {
 		LocalDate afterDays = LocalDate.now().plusDays(days);
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 		return afterDays.format(formatter);
+	}
+	
+	public static String toMyDateFormat(java.sql.Date date) {
+		
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+		return date.toLocalDate().format(formatter);
 	}
 }

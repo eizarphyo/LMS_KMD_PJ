@@ -1,13 +1,16 @@
 package model;
 
+import java.sql.Date;
+
 public class ReturnModel {
 	private String returnId;
 	private String borrowId;
 	private String stuId;
-	private String returnedAt;
+	private Date returnedAt;
 	private int returnedQty;
 	private int lateFine;
 	private int totalFine;
+	
 	public String getReturnId() {
 		return returnId;
 	}
@@ -26,10 +29,11 @@ public class ReturnModel {
 	public void setStuId(String stuId) {
 		this.stuId = stuId;
 	}
-	public String getReturnedAt() {
+	
+	public Date getReturnedAt() {
 		return returnedAt;
 	}
-	public void setReturnedAt(String returnedAt) {
+	public void setReturnedAt(Date returnedAt) {
 		this.returnedAt = returnedAt;
 	}
 	public int getReturnedQty() {

@@ -2,7 +2,6 @@ package model;
 
 
 import java.sql.Date;
-import java.time.LocalDate;
 //import java.util.Date;
 
 public class BorrowModel {
@@ -12,6 +11,7 @@ public class BorrowModel {
 	private Date borrowAt;
 	private int borrowQty;
 	private int qtyToBeReturned;
+	private int returnedQty;
 	private boolean isAllReturned;
 
 	public String getBorrowId() {
@@ -59,6 +59,14 @@ public class BorrowModel {
 
 	public void setQtyToBeReturned(int qtyToBeReturned) {
 		this.qtyToBeReturned = qtyToBeReturned;
+	}
+	
+	public int getReturnedQty() {
+		return returnedQty;
+	}
+
+	public void setReturnedQty(int returnedQty) {
+		this.returnedQty = returnedQty;
 	}
 
 	public boolean isAllReturned() {

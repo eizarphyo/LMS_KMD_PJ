@@ -17,6 +17,9 @@ import model.PublisherModel;
 import view.Test;
 
 public class MyTblFunctions {
+	
+	
+	
 	public static void updateBooksTable() {
 		DefaultTableModel dtm = Test.dtm;
 		dtm.setRowCount(0);

@@ -59,6 +59,7 @@ public class BorrowDialogView extends JDialog {
 	private DefaultTableModel dtm = new DefaultTableModel();
 	private List<BookModel> selectedBooks = new ArrayList<>();
 	private JButton btnRemove;
+	private JLabel lblQty;
 
 	/**
 	 * Launch the application.
@@ -66,7 +67,7 @@ public class BorrowDialogView extends JDialog {
 	public static void main(String[] args) {
 		try {
 			dialog = new BorrowDialogView();
-			dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRO-"));
+			dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRW-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -77,7 +78,7 @@ public class BorrowDialogView extends JDialog {
 	public static void showDialog() {
 		try {
 			dialog = new BorrowDialogView();
-			dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRO-"));
+			dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRW-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -101,7 +102,7 @@ public class BorrowDialogView extends JDialog {
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
 
-		JLabel lblDate = new JLabel(ChangeDate.toMySqlDateFormat());
+		JLabel lblDate = new JLabel(ChangeDate.toMyDateFormat());
 		lblDate.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		lblDate.setBounds(506, 61, 70, 20);
@@ -150,7 +151,7 @@ public class BorrowDialogView extends JDialog {
 					txtSearch.selectAll();
 					return;
 				}
-				
+
 				BookController ctl = new BookController();
 				BookModel book = new BookModel();
 
@@ -170,6 +171,7 @@ public class BorrowDialogView extends JDialog {
 				}
 
 				selectedBooks.add(book);
+				lblQty.setText(selectedBooks.size() + "");
 				updateTableRows();
 				txtSearch.setText("");
 				txtSearch.requestFocus();
@@ -222,7 +224,7 @@ public class BorrowDialogView extends JDialog {
 		scrollPane.setViewportView(tblBooks);
 		tblBooks.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
-		JLabel lblQty = new JLabel("0");
+		lblQty = new JLabel("0");
 		lblQty.setBounds(506, 321, 50, 20);
 		panel.add(lblQty);
 		lblQty.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -239,14 +241,12 @@ public class BorrowDialogView extends JDialog {
 		lbldue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbldue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lbldue);
-		
+
 		JLabel lblDue = new JLabel(ChangeDate.toDateAfterDays(7));
 		lblDue.setBounds(486, 300, 70, 20);
 		lblDue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lblDue);
-
-		
 
 		JLabel title = new JLabel("Borrow any available books in the library");
 		title.setFont(new Font("Tahoma", Font.BOLD, 16));
@@ -257,6 +257,12 @@ public class BorrowDialogView extends JDialog {
 		btnRemove.setVisible(false);
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+
+				int i = tblBooks.getSelectedRow();
+				selectedBooks.remove(i);
+
+				updateTableRows();
+				lblQty.setText(selectedBooks.size() + "");
 				tblBooks.clearSelection();
 				btnRemove.setVisible(false);
 			}
@@ -277,9 +283,10 @@ public class BorrowDialogView extends JDialog {
 
 							borrow.setBorrowId(dialog.getTitle());
 							borrow.setStuId(txtStuId.getText());
-//							borrow.setBorrowAt(lblDate.getText());
+//							borrow.setBorrowAt(lblDate.getText());  
 							borrow.setBorrowAt(Date.valueOf(LocalDate.now()));
 							borrow.setBorrowQty(selectedBooks.size());
+							borrow.setReturnedQty(0);
 							borrow.setQtyToBeReturned(selectedBooks.size());
 							borrow.setAllReturned(false);
 
@@ -308,7 +315,7 @@ public class BorrowDialogView extends JDialog {
 							}
 
 							JOptionPane.showMessageDialog(null, "Success!");
-							dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRO-"));
+							dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRW-"));
 							clear();
 
 						}
@@ -367,6 +374,7 @@ public class BorrowDialogView extends JDialog {
 
 		txtSearch.setText("");
 		selectedBooks.clear();
+		lblQty.setText(selectedBooks.size() + "");
 		dtm.setRowCount(0);
 
 		btnRemove.setVisible(false);
