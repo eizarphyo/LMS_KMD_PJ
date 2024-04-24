@@ -92,12 +92,11 @@ public class BorrowController {
 	}
 
 	public List<BorrowModel> getAllBorrow() {
-		String query = "SELECT * FROM lib.return ORDER BY return_id DESC";
+		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id ORDER BY borrow_id DESC";
 		List<BorrowModel> borrowlist = new ArrayList<>();
 
-		PreparedStatement ps;
 		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -111,6 +110,8 @@ public class BorrowController {
 				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
 				borrow.setReturnedQty(rs.getInt("returned_qty"));
 				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
+				
+				borrow.setStuName(rs.getString("stu_name"));
 
 				StudentModel student = new StudentModel();
 				student.setStuId(borrow.getStuId());

@@ -194,5 +194,22 @@ public class DonatorController {
 		}
 		return null;
 	}
+	
+	public static String getNameById(String id) {
+		String query = "SELECT * FROM lib.donator WHERE donator_id= ?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, id);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getString("donator_name");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 
 }

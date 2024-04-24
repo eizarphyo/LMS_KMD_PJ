@@ -17,7 +17,8 @@ public class MyBtn {
 		btn.setContentAreaFilled(false);
 		btn.setOpaque(true);
 		
-		btn.setBorder(BorderFactory.createBevelBorder(0));
+		btn.setBorder(BorderFactory.createLineBorder(new Color(89,89,89), 1, false));
+//		btn.setBorder(BorderFactory.createBevelBorder(0));
 		btn.setFocusPainted(false); // Remove focus indication
 
 		btn.addMouseListener(BtnMouseListener.getListener(btn));
@@ -30,7 +31,7 @@ public class MyBtn {
         btn.setFocusPainted(false); // Remove focus indication
         btn.setBorder(BorderFactory.createBevelBorder(0));
 //        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40)); // Set max size equal to max size of the vertical box
-        btn.setFont(new Font("Tahoma", Font.PLAIN, 13));
+        btn.setFont(new Font("Tahoma", Font.PLAIN, 14));
 
         btn.addMouseListener(BtnMouseListener.getSideNavListener(btn));
 	}

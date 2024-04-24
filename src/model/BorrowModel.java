@@ -13,6 +13,8 @@ public class BorrowModel {
 	private int qtyToBeReturned;
 	private int returnedQty;
 	private boolean isAllReturned;
+	
+	private String stuName;
 
 	public String getBorrowId() {
 		return borrowId;
@@ -76,5 +78,14 @@ public class BorrowModel {
 	public void setAllReturned(boolean isAllReturned) {
 		this.isAllReturned = isAllReturned;
 	}
+
+	public String getStuName() {
+		return stuName;
+	}
+
+	public void setStuName(String stuName) {
+		this.stuName = stuName;
+	}
+	
 
 }

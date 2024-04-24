@@ -47,6 +47,8 @@ public class AuthorDiglogView extends JDialog {
 
 	public static void showDialog() {
 		try {
+			update = false;
+
 			dialog = new AuthorDiglogView();
 			dialog.setTitle(AutoID.getPK("author_id", "author", "AUT-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

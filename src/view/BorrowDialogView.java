@@ -21,6 +21,7 @@ import javax.swing.table.JTableHeader;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 
+import components.MyBtn;
 import components.MyTable;
 import controller.BookController;
 import controller.BorrowController;
@@ -90,7 +91,8 @@ public class BorrowDialogView extends JDialog {
 	 * Create the dialog.
 	 */
 	public BorrowDialogView() {
-		setBounds(100, 100, 600, 558);
+		setBounds(100, 100, 553, 603);
+//		setBounds(100, 100, 600, 578);
 
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
@@ -101,18 +103,12 @@ public class BorrowDialogView extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-
+		
 		JLabel lblDate = new JLabel(ChangeDate.toMyDateFormat());
 		lblDate.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblDate.setBounds(506, 61, 70, 20);
+		lblDate.setBounds(443, 8, 70, 20);
 		contentPanel.add(lblDate);
-
-		JLabel lblD = new JLabel("Date:");
-		lblD.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblD.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblD.setBounds(442, 61, 49, 20);
-		contentPanel.add(lblD);
 
 		JLabel lblsid = new JLabel("Student ID:");
 		lblsid.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -183,12 +179,12 @@ public class BorrowDialogView extends JDialog {
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Selected Books:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(10, 120, 566, 352);
+		panel.setBounds(10, 120, 519, 397);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 21, 546, 268);
+		scrollPane.setBounds(10, 21, 499, 318);
 		panel.add(scrollPane);
 
 		tblBooks = new JTable() {
@@ -225,25 +221,25 @@ public class BorrowDialogView extends JDialog {
 		tblBooks.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		lblQty = new JLabel("0");
-		lblQty.setBounds(506, 321, 50, 20);
+		lblQty.setBounds(429, 370, 80, 20);
 		panel.add(lblQty);
 		lblQty.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblQty.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		JLabel lblqty = new JLabel("Total Books:");
-		lblqty.setBounds(376, 321, 100, 20);
+		lblqty.setBounds(319, 370, 100, 20);
 		panel.add(lblqty);
 		lblqty.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblqty.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		JLabel lbldue = new JLabel("Due Date:");
-		lbldue.setBounds(396, 300, 80, 20);
+		lbldue.setBounds(339, 350, 80, 20);
 		lbldue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbldue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lbldue);
 
 		JLabel lblDue = new JLabel(ChangeDate.toDateAfterDays(7));
-		lblDue.setBounds(486, 300, 70, 20);
+		lblDue.setBounds(439, 350, 70, 20);
 		lblDue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lblDue);
@@ -255,6 +251,8 @@ public class BorrowDialogView extends JDialog {
 
 		btnRemove = new JButton("Remove");
 		btnRemove.setVisible(false);
+		MyBtn.changeMyBtnStyle(btnRemove);
+		btnRemove.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -267,66 +265,58 @@ public class BorrowDialogView extends JDialog {
 				btnRemove.setVisible(false);
 			}
 		});
-		btnRemove.setBounds(487, 92, 85, 25);
+		btnRemove.setBounds(428, 87, 85, 25);
 		contentPanel.add(btnRemove);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton btnBorrow = new JButton("Borrow");
-				btnBorrow.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						if (hasValidInputs()) {
-							BorrowController bctl = new BorrowController();
-							BorrowModel borrow = new BorrowModel();
+		
+		JButton btnBorrow = new JButton("Borrow");
+		btnBorrow.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (hasValidInputs()) {
+					BorrowController bctl = new BorrowController();
+					BorrowModel borrow = new BorrowModel();
 
-							borrow.setBorrowId(dialog.getTitle());
-							borrow.setStuId(txtStuId.getText());
-//							borrow.setBorrowAt(lblDate.getText());  
-							borrow.setBorrowAt(Date.valueOf(LocalDate.now()));
-							borrow.setBorrowQty(selectedBooks.size());
-							borrow.setReturnedQty(0);
-							borrow.setQtyToBeReturned(selectedBooks.size());
-							borrow.setAllReturned(false);
+					borrow.setBorrowId(dialog.getTitle());
+					borrow.setStuId(txtStuId.getText());
+					borrow.setBorrowAt(Date.valueOf(LocalDate.now()));
+					borrow.setBorrowQty(selectedBooks.size());
+					borrow.setReturnedQty(0);
+					borrow.setQtyToBeReturned(selectedBooks.size());
+					borrow.setAllReturned(false);
 
-							if (bctl.insert(borrow) == 1) {
-								BorrowDetailController detailsCtl = new BorrowDetailController();
+					if (bctl.insert(borrow) == 1) {
+						BorrowDetailController detailsCtl = new BorrowDetailController();
 
-								for (BookModel book : selectedBooks) {
-									BorrowDetailModel details = new BorrowDetailModel();
+						for (BookModel book : selectedBooks) {
+							BorrowDetailModel details = new BorrowDetailModel();
 
-									details.setBookId(book.getId());
-									details.setBorrowId(borrow.getBorrowId());
-									details.setReturned(false);
+							details.setBookId(book.getId());
+							details.setBorrowId(borrow.getBorrowId());
+							details.setReturned(false);
 
-									if (detailsCtl.insert(details) == 1) {
-										BookController bookCtl = new BookController();
-										BookModel b = new BookModel();
-										b.setId(book.getId());
-										b.setQty(book.getQty() - 1);
+							if (detailsCtl.insert(details) == 1) {
+								BookController bookCtl = new BookController();
+								BookModel b = new BookModel();
+								b.setId(book.getId());
+								b.setQty(book.getQty() - 1);
 
-										if (bookCtl.updateQty(b) != 1) {
-											JOptionPane.showMessageDialog(null, "Something went wrong");
-											return;
-										}
-									}
+								if (bookCtl.updateQty(b) != 1) {
+									JOptionPane.showMessageDialog(null, "Something went wrong");
+									return;
 								}
 							}
-
-							JOptionPane.showMessageDialog(null, "Success!");
-							dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRW-"));
-							clear();
-
 						}
 					}
-				});
-				btnBorrow.setFont(new Font("Tahoma", Font.PLAIN, 12));
-				btnBorrow.setActionCommand("OK");
-				buttonPane.add(btnBorrow);
-//				getRootPane().setDefaultButton(btnBorrow);
+
+					JOptionPane.showMessageDialog(null, "Success!");
+					dialog.setTitle(AutoID.getPK("borrow_id", "borrow", "BRW-"));
+					clear();
+
+				}
 			}
-		}
+		});
+		MyBtn.changeMyBtnStyle(btnBorrow);
+		btnBorrow.setBounds(424, 528, 89, 27);
+		contentPanel.add(btnBorrow);
 
 		createTable();
 	}

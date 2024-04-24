@@ -30,6 +30,12 @@ public class MyComboBox {
 
 	public static void fillComboItems(String table, String field, JComboBox<String> combo) {
 		String query = "SELECT " + field + " FROM " + table;
+		
+		if(table.equals("author")) {
+			query = query.concat(" ORDER BY author_name ASC");
+		} else if (table.equals("book")) {
+			query = query.concat(" ORDER BY title ASC");
+		}
 
 		PreparedStatement ps;
 		try {

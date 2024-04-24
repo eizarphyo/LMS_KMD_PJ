@@ -63,6 +63,7 @@ import java.awt.event.ActionEvent;
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.Box;
 
 public class ReturnDialogView extends JDialog {
 
@@ -191,15 +192,20 @@ public class ReturnDialogView extends JDialog {
 					checkPanel.revalidate();
 					checkPanel.repaint();
 					for (int i = 0; i < borrowData.size(); i++) {
-
-						rows[i][0] = false;
+						BorrowDetailModel borrow = borrowData.get(i);
+						rows[i][0] = borrow.isReturned() ? true : false;
 						rows[i][1] = i + 1;
-						rows[i][2] = borrowData.get(i).getBookId();
-						rows[i][3] = borrowData.get(i).getBookTitle();
-						rows[i][4] = borrowData.get(i).getAuthorName();
-						rows[i][5] = "Good";
-
-//						System.out.println(borrowData.get(i).isReturned());
+						rows[i][2] = borrow.getBookId();
+						rows[i][3] = borrow.getBookTitle();
+						rows[i][4] = borrow.getAuthorName();
+						
+						boolean isDamaged = false;
+						if(borrow.isReturned()) {
+							isDamaged = ReturnDetailController.isDamaged(borrow.getBookId(), borrow.getBorrowId());
+						}
+						
+						rows[i][5] = isDamaged ? "Damaged" : "Good";
+							
 						dtm.addRow(rows[i]);
 					}
 
@@ -218,7 +224,7 @@ public class ReturnDialogView extends JDialog {
 
 		JScrollPane scrollPane = new JScrollPane();
 
-		scrollPane.setBounds(10, 20, 499, 217);
+		scrollPane.setBounds(10, 20, 499, 195);
 		panel.add(scrollPane);
 
 		// Column names
@@ -248,25 +254,25 @@ public class ReturnDialogView extends JDialog {
 				}
 			}
 
-			@Override
-			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-				Component component = super.prepareRenderer(renderer, row, column);
-
-				// Check if row selection is disabled
-				boolean isSelectionDisabled = (Boolean) getValueAt(row, 0);
-
-				// Change row style if selection is disabled
-				if (isSelectionDisabled) {
-					component.setBackground(Color.LIGHT_GRAY);
-					component.setForeground(Color.RED); // Change text color if needed
-				} else {
-					// Reset to default style
-					component.setBackground(getBackground());
-					component.setForeground(getForeground());
-				}
-
-				return component;
-			}
+//			@Override
+//			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
+//				Component component = super.prepareRenderer(renderer, row, column);
+//
+//				// Check if row selection is disabled
+//				boolean isSelectionDisabled = (Boolean) getValueAt(row, 0);
+//
+//				// Change row style if selection is disabled
+//				if (isSelectionDisabled) {
+//					component.setBackground(Color.LIGHT_GRAY);
+//					component.setForeground(Color.RED); // Change text color if needed
+//				} else {
+//					// Reset to default style
+//					component.setBackground(getBackground());
+//					component.setForeground(getForeground());
+//				}
+//
+//				return component;
+//			}
 
 		};
 
@@ -380,12 +386,12 @@ public class ReturnDialogView extends JDialog {
 		}));
 
 		// Set column width
-		tblReturn.getColumnModel().getColumn(0).setPreferredWidth(5);
-		tblReturn.getColumnModel().getColumn(1).setPreferredWidth(15);
-		tblReturn.getColumnModel().getColumn(2).setPreferredWidth(70);
-		tblReturn.getColumnModel().getColumn(3).setPreferredWidth(150);
-		tblReturn.getColumnModel().getColumn(4).setPreferredWidth(100);
-		tblReturn.getColumnModel().getColumn(5).setPreferredWidth(60);
+		tblReturn.getColumnModel().getColumn(0).setPreferredWidth(27);
+		tblReturn.getColumnModel().getColumn(1).setPreferredWidth(33);
+		tblReturn.getColumnModel().getColumn(2).setPreferredWidth(71);
+		tblReturn.getColumnModel().getColumn(3).setPreferredWidth(179);
+		tblReturn.getColumnModel().getColumn(4).setPreferredWidth(94);
+		tblReturn.getColumnModel().getColumn(5).setPreferredWidth(92);
 
 		tblReturn.setRowHeight(27);
 		tblReturn.setSelectionBackground(LibColors.PRIMARY_SELECT_BG);
@@ -409,25 +415,25 @@ public class ReturnDialogView extends JDialog {
 		checkPanel.setBorder(
 				new TitledBorder(null, "Select Damaged Books:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		checkPanel.setVisible(false);
-		checkPanel.setBounds(10, 265, 499, 59);
+		checkPanel.setBounds(10, 226, 499, 98);
 		panel.add(checkPanel);
 
 		JLabel lbld = new JLabel("Late Fine:");
 		lbld.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbld.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbld.setBounds(389, 469, 80, 20);
+		lbld.setBounds(339, 471, 80, 20);
 		contentPanel.add(lbld);
 
 		JLabel lbltf = new JLabel("Total Fine:");
 		lbltf.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbltf.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbltf.setBounds(389, 510, 80, 20);
+		lbltf.setBounds(339, 510, 80, 20);
 		contentPanel.add(lbltf);
 
 		lblTotalFine = new JLabel("0 Ks.");
 		lblTotalFine.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTotalFine.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblTotalFine.setBounds(479, 510, 50, 20);
+		lblTotalFine.setBounds(429, 510, 100, 20);
 		contentPanel.add(lblTotalFine);
 
 		JLabel lblDate = new JLabel(ChangeDate.toMyDateFormat());
@@ -437,7 +443,7 @@ public class ReturnDialogView extends JDialog {
 		contentPanel.add(lblDate);
 
 		lblLateFees = new JLabel("0 Ks.");
-		lblLateFees.setBounds(479, 471, 50, 16);
+		lblLateFees.setBounds(429, 471, 100, 16);
 		contentPanel.add(lblLateFees);
 		lblLateFees.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblLateFees.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -445,133 +451,250 @@ public class ReturnDialogView extends JDialog {
 		JLabel lblDamage = new JLabel("Damage Fine:");
 		lblDamage.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblDamage.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblDamage.setBounds(369, 487, 100, 20);
+		lblDamage.setBounds(319, 490, 100, 20);
 		contentPanel.add(lblDamage);
 
 		lblDmgFine = new JLabel("0 Ks.");
 		lblDmgFine.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDmgFine.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblDmgFine.setBounds(479, 487, 50, 20);
+		lblDmgFine.setBounds(429, 490, 100, 20);
 		contentPanel.add(lblDmgFine);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
 
-			JButton btnReturn = new JButton("Return");
-			
-			btnReturn.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (txtStuId.getText().isBlank())
-						return;
-					else if (!isStuIdValid())
-						return;
-					else if (cboBorrowId.getSelectedIndex() <= 0) {
-						JOptionPane.showMessageDialog(null, "Please select a borrow ID first");
-						cboBorrowId.requestFocus();
-						return;
-					}
-
-					ReturnController ctl = new ReturnController();
-					ReturnModel ret = new ReturnModel();
-
-					String borrowId = cboBorrowId.getSelectedItem().toString().split(", ")[0];
-
-					ret.setStuId(txtStuId.getText());
-					ret.setReturnId(dialog.getTitle());
-					ret.setBorrowId(borrowId);
-					ret.setReturnedQty(books2bReturned.size());
-					ret.setReturnedAt(Date.valueOf(LocalDate.now()));
-					ret.setLateFine(Integer.parseInt(lblLateFees.getText().split(" ")[0]));
-					ret.setTotalFine(Integer.parseInt(lblTotalFine.getText().split(" ")[0]));
-
-					if (ctl.insert(ret) != 1) {
-						JOptionPane.showMessageDialog(null, "Cannot Return");
-						return;
-					}
-					// finished creating return
-
-					ReturnDetailController dctl = new ReturnDetailController();
-
-					for (String bookId : books2bReturned) {
-						ReturnDetailModel d = new ReturnDetailModel();
-
-						d.setBookId(bookId);
-						System.out.println(bookId + " " + d.getBookId());
-						d.setReturnId(dialog.getTitle());
-
-						String title = BookController.getTitleById(bookId);
-
-						int r = getRowIndexByBookTitle(tblReturn, 3, title);
-						String dmg = tblReturn.getValueAt(r, 5).toString();
-
-						d.setDamaged(dmg.equals("Damaged"));
-
-						BookModel book = BookController.getOneBookByTitle(title);
-						if (dmg.equals("Damaged")) {
-
-							int price = book.getPrice();
-							int fine = (int) Math.round(price * 0.1);
-
-							d.setDamageFees(fine);
-						}
-
-						if (dctl.insert(d) != 1) {
-							JOptionPane.showMessageDialog(null, "Error creating return details");
-							return;
-						}
-
-						book.setQty(book.getQty() + 1);
-						BookController bookCtl = new BookController();
-
-						// increase and update book's qty
-						if (bookCtl.updateQty(book) != 1) {
-							JOptionPane.showMessageDialog(null, "Error updating book qty");
-							return;
-						}
-
-						// update borrow_details' is_return field to true
-						BorrowDetailModel borrowDetail = new BorrowDetailModel();
-
-						borrowDetail.setBorrowId(borrowId);
-						borrowDetail.setBookId(bookId);
-
-						if (BorrowDetailController.updateIsReturnedByBorrowIdAndBookId(borrowDetail) != 1) {
-							JOptionPane.showMessageDialog(null, "Error updating is_return field of Borrow Details");
-							return;
-						}
-
-					}
-					// finished creating return details
-
-					// NEED TO UPDATE RETURN QTY --------------
-
-					BorrowModel borrow = BorrowController.getOneBorrowById(borrowId);
-
-					int returnedQty = borrow.getReturnedQty();
-
-					borrow.setReturnedQty(returnedQty + books2bReturned.size());
-					borrow.setQtyToBeReturned(borrow.getBorrowQty() - borrow.getReturnedQty());
-
-					borrow.setAllReturned(borrow.getQtyToBeReturned() == 0);
-
-					if (BorrowController.updateReturnQty(borrow) != 1) {
-						JOptionPane.showMessageDialog(null, "Error updating returned_qty in Borrow");
-						return;
-					}
-
-					JOptionPane.showMessageDialog(null, "Success!");
-					txtStuId.setText("");
-					cboBorrowId.setSelectedIndex(0);
-					cboBorrowId.setEnabled(false);
-
-					clearAll();
-					dialog.setTitle(AutoID.getPK("return_id", "lib.return", "RTN-"));
+		JButton btnReturn = new JButton("Return");
+		btnReturn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (txtStuId.getText().isBlank())
+					return;
+				else if (!isStuIdValid())
+					return;
+				else if (cboBorrowId.getSelectedIndex() <= 0) {
+					JOptionPane.showMessageDialog(null, "Please select a borrow ID first");
+					cboBorrowId.requestFocus();
+					return;
 				}
-			});
-			buttonPane.add(btnReturn);
-			
-		}
+
+				ReturnController ctl = new ReturnController();
+				ReturnModel ret = new ReturnModel();
+
+				String borrowId = cboBorrowId.getSelectedItem().toString().split(", ")[0];
+
+				ret.setStuId(txtStuId.getText());
+				ret.setReturnId(dialog.getTitle());
+				ret.setBorrowId(borrowId);
+				ret.setReturnedQty(books2bReturned.size());
+				ret.setReturnedAt(Date.valueOf(LocalDate.now()));
+				ret.setLateFine(Integer.parseInt(lblLateFees.getText().split(" ")[0]));
+				ret.setTotalFine(Integer.parseInt(lblTotalFine.getText().split(" ")[0]));
+
+				if (ctl.insert(ret) != 1) {
+					JOptionPane.showMessageDialog(null, "Cannot Return");
+					return;
+				}
+				// finished creating return
+
+				ReturnDetailController dctl = new ReturnDetailController();
+
+				for (String bookId : books2bReturned) {
+					ReturnDetailModel d = new ReturnDetailModel();
+
+					d.setBookId(bookId);
+					d.setReturnId(dialog.getTitle());
+
+					String title = BookController.getTitleById(bookId);
+
+					int r = getRowIndexByBookTitle(tblReturn, 3, title);
+					String dmg = tblReturn.getValueAt(r, 5).toString();
+
+					d.setDamaged(dmg.equals("Damaged"));
+
+					BookModel book = BookController.getOneBookByTitle(title);
+					if (dmg.equals("Damaged")) {
+
+						int price = book.getPrice();
+						int fine = (int) Math.round(price * 0.1);
+
+						d.setDamageFees(fine);
+					}
+
+					if (dctl.insert(d) != 1) {
+						JOptionPane.showMessageDialog(null, "Error creating return details");
+						return;
+					}
+
+					book.setQty(book.getQty() + 1);
+					BookController bookCtl = new BookController();
+
+					// increase and update book's qty
+					if (bookCtl.updateQty(book) != 1) {
+						JOptionPane.showMessageDialog(null, "Error updating book qty");
+						return;
+					}
+
+					// update borrow_details' is_return field to true
+					BorrowDetailModel borrowDetail = new BorrowDetailModel();
+
+					borrowDetail.setBorrowId(borrowId);
+					borrowDetail.setBookId(bookId);
+
+					if (BorrowDetailController.updateIsReturnedByBorrowIdAndBookId(borrowDetail) != 1) {
+						JOptionPane.showMessageDialog(null, "Error updating is_return field of Borrow Details");
+						return;
+					}
+
+				}
+				// finished creating return details
+
+				// NEED TO UPDATE RETURN QTY --------------
+
+				BorrowModel borrow = BorrowController.getOneBorrowById(borrowId);
+
+				int returnedQty = borrow.getReturnedQty();
+
+				borrow.setReturnedQty(returnedQty + books2bReturned.size());
+				borrow.setQtyToBeReturned(borrow.getBorrowQty() - borrow.getReturnedQty());
+
+				borrow.setAllReturned(borrow.getQtyToBeReturned() == 0);
+
+				if (BorrowController.updateReturnQty(borrow) != 1) {
+					JOptionPane.showMessageDialog(null, "Error updating returned_qty in Borrow");
+					return;
+				}
+
+				JOptionPane.showMessageDialog(null, "Success!");
+				txtStuId.setText("");
+				txtStuId.requestFocus();
+				cboBorrowId.setSelectedIndex(0);
+				cboBorrowId.setEnabled(false);
+
+				clearAll();
+				dialog.setTitle(AutoID.getPK("return_id", "lib.return", "RTN-"));
+			}
+		});
+		MyBtn.changeMyBtnStyle(btnReturn);
+		btnReturn.setBounds(440, 532, 89, 27);
+		contentPanel.add(btnReturn);
+
+		// -----------------
+//		{
+//			JPanel buttonPane = new JPanel();
+//			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
+//			getContentPane().add(buttonPane, BorderLayout.SOUTH);
+//
+//			JButton btnReturn = new JButton("Return");
+//
+//			btnReturn.addActionListener(new ActionListener() {
+//				public void actionPerformed(ActionEvent e) {
+//					if (txtStuId.getText().isBlank())
+//						return;
+//					else if (!isStuIdValid())
+//						return;
+//					else if (cboBorrowId.getSelectedIndex() <= 0) {
+//						JOptionPane.showMessageDialog(null, "Please select a borrow ID first");
+//						cboBorrowId.requestFocus();
+//						return;
+//					}
+//
+//					ReturnController ctl = new ReturnController();
+//					ReturnModel ret = new ReturnModel();
+//
+//					String borrowId = cboBorrowId.getSelectedItem().toString().split(", ")[0];
+//
+//					ret.setStuId(txtStuId.getText());
+//					ret.setReturnId(dialog.getTitle());
+//					ret.setBorrowId(borrowId);
+//					ret.setReturnedQty(books2bReturned.size());
+//					ret.setReturnedAt(Date.valueOf(LocalDate.now()));
+//					ret.setLateFine(Integer.parseInt(lblLateFees.getText().split(" ")[0]));
+//					ret.setTotalFine(Integer.parseInt(lblTotalFine.getText().split(" ")[0]));
+//
+//					if (ctl.insert(ret) != 1) {
+//						JOptionPane.showMessageDialog(null, "Cannot Return");
+//						return;
+//					}
+//					// finished creating return
+//
+//					ReturnDetailController dctl = new ReturnDetailController();
+//
+//					for (String bookId : books2bReturned) {
+//						ReturnDetailModel d = new ReturnDetailModel();
+//
+//						d.setBookId(bookId);
+//						System.out.println(bookId + " " + d.getBookId());
+//						d.setReturnId(dialog.getTitle());
+//
+//						String title = BookController.getTitleById(bookId);
+//
+//						int r = getRowIndexByBookTitle(tblReturn, 3, title);
+//						String dmg = tblReturn.getValueAt(r, 5).toString();
+//
+//						d.setDamaged(dmg.equals("Damaged"));
+//
+//						BookModel book = BookController.getOneBookByTitle(title);
+//						if (dmg.equals("Damaged")) {
+//
+//							int price = book.getPrice();
+//							int fine = (int) Math.round(price * 0.1);
+//
+//							d.setDamageFees(fine);
+//						}
+//
+//						if (dctl.insert(d) != 1) {
+//							JOptionPane.showMessageDialog(null, "Error creating return details");
+//							return;
+//						}
+//
+//						book.setQty(book.getQty() + 1);
+//						BookController bookCtl = new BookController();
+//
+//						// increase and update book's qty
+//						if (bookCtl.updateQty(book) != 1) {
+//							JOptionPane.showMessageDialog(null, "Error updating book qty");
+//							return;
+//						}
+//
+//						// update borrow_details' is_return field to true
+//						BorrowDetailModel borrowDetail = new BorrowDetailModel();
+//
+//						borrowDetail.setBorrowId(borrowId);
+//						borrowDetail.setBookId(bookId);
+//
+//						if (BorrowDetailController.updateIsReturnedByBorrowIdAndBookId(borrowDetail) != 1) {
+//							JOptionPane.showMessageDialog(null, "Error updating is_return field of Borrow Details");
+//							return;
+//						}
+//
+//					}
+//					// finished creating return details
+//
+//					// NEED TO UPDATE RETURN QTY --------------
+//
+//					BorrowModel borrow = BorrowController.getOneBorrowById(borrowId);
+//
+//					int returnedQty = borrow.getReturnedQty();
+//
+//					borrow.setReturnedQty(returnedQty + books2bReturned.size());
+//					borrow.setQtyToBeReturned(borrow.getBorrowQty() - borrow.getReturnedQty());
+//
+//					borrow.setAllReturned(borrow.getQtyToBeReturned() == 0);
+//
+//					if (BorrowController.updateReturnQty(borrow) != 1) {
+//						JOptionPane.showMessageDialog(null, "Error updating returned_qty in Borrow");
+//						return;
+//					}
+//
+//					JOptionPane.showMessageDialog(null, "Success!");
+//					txtStuId.setText("");
+//					cboBorrowId.setSelectedIndex(0);
+//					cboBorrowId.setEnabled(false);
+//
+//					clearAll();
+//					dialog.setTitle(AutoID.getPK("return_id", "lib.return", "RTN-"));
+//				}
+//			});
+//			buttonPane.add(btnReturn);
+//
+//		}
+		// ----
 
 	}
 
@@ -615,7 +738,6 @@ public class ReturnDialogView extends JDialog {
 	}
 
 	boolean isStuIdValid() {
-		System.out.println(txtStuId.getText() + "<-");
 		if (txtStuId.getText().length() != 8 || !txtStuId.getText().startsWith("STU-")) {
 			JOptionPane.showMessageDialog(null, "Invalid Student ID\nRequired Format: STU-XXXX");
 			txtStuId.requestFocus();

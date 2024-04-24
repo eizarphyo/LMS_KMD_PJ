@@ -77,6 +77,8 @@ public class BookDialogView extends JDialog {
 
 	public static void showDialog() {
 		try {
+			update = false;
+
 			dialog = new BookDialogView();
 			dialog.setTitle(AutoID.getPK("book_id", "book", "BOK-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -212,6 +214,8 @@ public class BookDialogView extends JDialog {
 		txtPrice.setBounds(179, 380, 200, 20);
 		contentPanel.add(txtPrice);
 		txtPrice.setColumns(10);
+
+		System.out.println("-> " + update);
 
 		btnAdd = new JButton(update ? "Update" : "Add");
 		btnAdd.addActionListener(new ActionListener() {

@@ -89,14 +89,14 @@ public class ReturnController {
 	}
 	
 	public List<ReturnModel> getAllReturn() {
-		String query = "SELECT * FROM lib.return ORDER BY return_id DESC";
+		String query = "SELECT * FROM lib.return JOIN lib.student ON lib.return.stu_id=student.stu_id ORDER BY return_id DESC";
 		List<ReturnModel> returnlist = new ArrayList<>();
 
-		PreparedStatement ps;
 		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 
+			System.out.println("------");
 			while (rs.next()) {
 				ReturnModel returned = new ReturnModel();
 
@@ -107,6 +107,8 @@ public class ReturnController {
 				returned.setReturnedQty(rs.getInt("returned_qty"));
 				returned.setLateFine(rs.getInt("late_fine"));
 				returned.setTotalFine(rs.getInt("total_fine"));
+				
+				returned.setStuName(rs.getString("stu_name"));
 				
 				BorrowModel borrow = new BorrowModel();
 				borrow.setBorrowId(returned.getBorrowId());
@@ -155,6 +157,5 @@ public class ReturnController {
 		}
 		return returnlist;
 	}
-
 
 }

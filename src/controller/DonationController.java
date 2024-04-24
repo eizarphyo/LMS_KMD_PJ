@@ -28,7 +28,7 @@ public class DonationController {
 	}
 
 	public int insert(DonationModel donation) {
-		String query = "INSERT INTO lib.donation (donation_id, donator_id, date) VALUES (?, ?, ?)";
+		String query = "INSERT INTO lib.donation (donation_id, donator_id, date, total_qty) VALUES (?, ?, ?, ?)";
 
 		PreparedStatement ps;
 		try {
@@ -36,7 +36,7 @@ public class DonationController {
 			ps.setString(1, donation.getDonationId());
 			ps.setString(2, donation.getDonatorId());
 			ps.setString(3, donation.getDate());
-			
+			ps.setInt(4, donation.getTotalQty());			
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -46,14 +46,15 @@ public class DonationController {
 	}
 
 	public int update(DonationModel donation)  {
-		String query = "UPDATE lib.donation SET donator_id=?,date=? WHERE donation_id=?";
+		String query = "UPDATE lib.donation SET donator_id=?,date=?, total_qty=? WHERE donation_id=?";
 
 		PreparedStatement ps;
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, donation.getDonatorId());
 			ps.setString(2, donation.getDate());
-			ps.setString(5, donation.getDonatorId());
+			ps.setInt(3, donation.getTotalQty());			
+			ps.setString(4, donation.getDonatorId());
 			
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -78,7 +79,7 @@ public class DonationController {
 	}
 
 	public List<DonationModel> getAllDonation() {
-		String query = "SELECT * FROM lib.donation ORDER BY donation_id DESC";
+		String query = "SELECT * FROM lib.donation JOIN lib.donator ON donation.donator_id=donator.donator_id ORDER BY donation_id DESC";
 		List<DonationModel> donations = new ArrayList<>();
 
 		PreparedStatement ps;
@@ -90,8 +91,10 @@ public class DonationController {
 				DonationModel donation = new DonationModel();
 
 				donation.setDonationId(rs.getString("donation_id"));
-				donation.setDonationId(rs.getString("donator"));
+				donation.setDonatorId(rs.getString("donator_id"));
 				donation.setDate(rs.getString("date"));
+				donation.setTotalQty(rs.getInt("total_qty"));
+				donation.setDonatorName(rs.getString("donator_name"));
 				
 				DonatorModel donator = new DonatorModel();
 				donator.setDonatorId(donation.getDonatorId());
@@ -120,7 +123,8 @@ public class DonationController {
 				donation.setDonationId(rs.getString("donation_id"));
 				donation.setDonationId(rs.getString("donator"));
 				donation.setDate(rs.getString("date"));
-				
+				donation.setTotalQty(rs.getInt("total_qty"));
+
 				DonatorModel donator = new DonatorModel();
 				donator.setDonatorId(donation.getDonatorId());
 

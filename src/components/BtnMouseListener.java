@@ -17,7 +17,8 @@ public class BtnMouseListener extends MouseAdapter {
 			public void mouseEntered(MouseEvent e) {
 				if (btn.isEnabled()) {
 					btn.setBackground(LibColors.PRIMARY_ACCENT);
-					btn.setBorder(BorderFactory.createBevelBorder(1));
+					btn.setBorder(BorderFactory.createLineBorder(Color.GRAY));
+//					btn.setBorder(BorderFactory.createBevelBorder(1));
 				}
 			}
 
@@ -25,7 +26,8 @@ public class BtnMouseListener extends MouseAdapter {
 			public void mouseExited(MouseEvent e) {
 				if (btn.isEnabled()) {
 					btn.setBackground(LibColors.PRIMARY_BG);
-					btn.setBorder(BorderFactory.createBevelBorder(0));
+					btn.setBorder(BorderFactory.createLineBorder(new Color(89,89,89)));
+//					btn.setBorder(BorderFactory.createBevelBorder(0));
 				}
 			}
 
@@ -76,7 +78,7 @@ public class BtnMouseListener extends MouseAdapter {
 						b.setBackground(LibColors.PRIMARY_ACCENT);
 
 					}
-					System.out.println("Tran> " + b.isOpaque());
+//					System.out.println("Tran> " + b.isOpaque());
 				}
 
 //				btn.setOpaque(true);

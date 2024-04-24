@@ -76,7 +76,7 @@ public class AuthorController {
 	}
 
 	public List<AuthorModel> getAllAuthors() {
-		String query = "SELECT * FROM lib.author ORDER BY author_id DESC";
+		String query = "SELECT * FROM lib.author ORDER BY author_name ASC";
 		List<AuthorModel> authors = new ArrayList<>();
 
 		PreparedStatement ps;
@@ -122,7 +122,7 @@ public class AuthorController {
 	}
 
 	public List<AuthorModel> searchByName(AuthorModel data) {
-		String query = "SELECT * FROM lib.author WHERE author_name LIKE ? ORDER BY author_id DESC";
+		String query = "SELECT * FROM lib.author WHERE author_name LIKE ? ORDER BY author_name ASC";
 		List<AuthorModel> authors = new ArrayList<>();
 
 		PreparedStatement ps;

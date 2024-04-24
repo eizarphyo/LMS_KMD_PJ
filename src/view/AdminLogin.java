@@ -57,14 +57,15 @@ public class AdminLogin extends JDialog {
 		setResizable(false);
 		setTitle("Login");
 //		put("JFrame.activeTitleBackground", primaryBtnBg);
+		setBounds(450, 200, 357, 250);
 		
-		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
-		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
-		setLocation(centerX, centerY);
+//		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
+//		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
+//		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
+//		setLocation(centerX, centerY);
+
 		
 		setBackground(Color.BLACK);
-		setBounds(100, 100, 357, 250);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setForeground(Color.WHITE);
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));

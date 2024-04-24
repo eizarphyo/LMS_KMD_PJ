@@ -1,5 +1,6 @@
 package controller;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import com.mysql.jdbc.Connection;
@@ -36,6 +37,24 @@ public class ReturnDetailController {
 			e.printStackTrace();
 		}
 		return 0;
+	}
+	
+	public static boolean isDamaged(String bookId, String borrowId) {
+		String query = "SELECT * FROM lib.return_details WHERE book_id=? AND return_id in (SELECT return_id FROM lib.return WHERE borrow_id=?)";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, bookId);
+			ps.setString(2, borrowId);
+			
+			ResultSet rs = ps.executeQuery();
+			if(rs.next()) {
+				return rs.getBoolean("is_damaged");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 	
 //	public  int update(ReturnDetailModel details) {

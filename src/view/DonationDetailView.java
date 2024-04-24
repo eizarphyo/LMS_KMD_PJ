@@ -80,7 +80,7 @@ public class DonationDetailView extends JDialog {
 			dd = ctl.getOneDonationById(dd);
 
 			cboDonator.setSelectedItem(dd.getDonatorId());
-			cboBook.setSelectedItem(dd.getBookName());
+//			cboBook.setSelectedItem(dd.getBookName());
 			txtQty.setText(dd.getQty() + "");
 
 
@@ -148,7 +148,7 @@ public class DonationDetailView extends JDialog {
 				DonationDetailController ctl = new DonationDetailController();
 				DonationDetailModel detail = new DonationDetailModel();
 				
-				detail.setDonationId(ctl.getIdById(cboDonator.getSelectedItem().toString()));
+//				detail.setDonationId(ctl.getIdById(cboDonator.getSelectedItem().toString()));
 				detail.setBookId(ctl.getIdByName(cboBook.getSelectedItem().toString()));
 				detail.setQty(Integer.parseInt(txtQty.getText().toString()));
 

@@ -63,6 +63,7 @@ public class Main extends JFrame {
 	 * Create the frame.
 	 */
 	public Main() {
+		setTitle("Library Management System");
 		setBounds(GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds());
 
 		contentPane = new JPanel();
@@ -85,38 +86,37 @@ public class Main extends JFrame {
 		ImageIcon icon = new ImageIcon(img);
 
 		lbl = new JLabel("Fantastic Library");
+		
+		// Set padding by adjusting the insets of the label's border
+        lbl.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0)); // top, left, bottom, right
+		lbl.setIconTextGap(20); // Adjust the gap value between img and txt
 		lbl.setBounds(0, 0, 1300, 50);
-		contentPanel.add(lbl);
 		lbl.setIcon(icon);
-		lbl.setIconTextGap(25); // Adjust the gap value between img and txt
 		lbl.setOpaque(true);
 		lbl.setBackground(Color.ORANGE);
 		lbl.setFont(new Font("Tahoma", Font.BOLD, 18));
 		contentPane.setLayout(null);
+		contentPanel.add(lbl);
 
 		// Search field
-		JPanel searchPanel = new JPanel();
-		searchPanel.setBounds(244, 61, 215, 30);
-		contentPanel.add(searchPanel);
-
-		// Create the icon
-		java.net.URL iconUrl = getClass().getResource("../images/search.png");
-		Image image = new ImageIcon(iconUrl).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH); // Replace
-																										// "icon.png"
-																										// with the path
-																										// to your icon
-																										// image
-
-		ImageIcon ic = new ImageIcon(image);
-		JLabel iconLabel = new JLabel(ic);
-
-		// Create the text field
-		JTextField txtSearch = new JTextField(15);
-		txtSearch.setBounds(800, 69, 150, 25);
-
-		// Add the icon and text field to the panel
-		searchPanel.add(iconLabel, BorderLayout.WEST);
-		searchPanel.add(txtSearch, BorderLayout.CENTER);
+//		JPanel searchPanel = new JPanel();
+//		searchPanel.setBounds(244, 61, 215, 30);
+//		contentPanel.add(searchPanel);
+//
+//		// Create the icon
+//		java.net.URL iconUrl = getClass().getResource("../images/search.png");
+//		Image image = new ImageIcon(iconUrl).getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH); // Replace
+//																										// "icon.png"
+//		ImageIcon ic = new ImageIcon(image);
+//		JLabel iconLabel = new JLabel(ic);
+//
+//		// Create the text field
+//		JTextField txtSearch = new JTextField(15);
+//		txtSearch.setBounds(800, 69, 150, 25);
+//
+//		// Add the icon and text field to the panel
+//		searchPanel.add(iconLabel, BorderLayout.WEST);
+//		searchPanel.add(txtSearch, BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
 		panel.setBounds(0, 100, 1280, 580);
@@ -129,11 +129,12 @@ public class Main extends JFrame {
 
 		JPanel panelBooks = new JPanel();
 		scrollPane.setViewportView(panelBooks);
-		panelBooks.setLayout(new GridLayout(books.size() / 8, 8, 0, 20));
+		System.out.println(books.size());
+		panelBooks.setLayout(new GridLayout(books.size() / 6+1, 6, 10, 20));
 
 		JLabel title = new JLabel("Available Books");
 		title.setFont(new Font("Tahoma", Font.BOLD, 15));
-		title.setBounds(0, 60, 500, 30);
+		title.setBounds(10, 61, 500, 30);
 		contentPanel.add(title);
 
 		JButton btnBorrow = new JButton("Borrow");
@@ -160,18 +161,14 @@ public class Main extends JFrame {
 		
 		
 		for(BookModel book: books) {
-			ImageIcon bookCover = new ImageIcon(convertBlobToImage(book.getImage()).getScaledInstance(130, 180, Image.SCALE_SMOOTH));
-			
-			ImageIcon img2 = new ImageIcon(
-					new ImageIcon("C:\\Users\\Lenovo\\OneDrive\\Pictures\\Saved Pictures\\select.png").getImage()
-							.getScaledInstance(30, 30, Image.SCALE_SMOOTH));
+			ImageIcon bookCover = new ImageIcon(convertBlobToImage(book.getImage()).getScaledInstance(150, 200, Image.SCALE_SMOOTH));
 			
 			JCheckBox checkBox = new JCheckBox();
 			checkBox.setOpaque(false); // Set opaque to false
 			checkBox.setBorderPainted(false); // Remove border
 			
-			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, img2, checkBox);
-			
+			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, checkBox);
+//			label.setBorder(BorderFactory.createLineBorder(Color.orange));
 			panelBooks.add(label);
 		}
 		

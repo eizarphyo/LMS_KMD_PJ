@@ -1,5 +1,6 @@
 package controller;
 
+import java.awt.event.ActionEvent;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -9,7 +10,9 @@ import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
 
 import config.DBConfig;
+import model.BookModel;
 import model.DonationDetailModel;
+import model.DonationModel;
 
 public class DonationDetailController {
 	private static Connection con;
@@ -32,7 +35,7 @@ public class DonationDetailController {
 			ps.setString(1, detail.getDonationId());
 			ps.setString(2, detail.getBookId());
 			ps.setInt(3, detail.getQty());
-			
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -49,7 +52,6 @@ public class DonationDetailController {
 			ps.setString(1, detail.getBookId());
 			ps.setInt(2, detail.getQty());
 			ps.setString(4, detail.getDonationId());
-			
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -93,8 +95,8 @@ public class DonationDetailController {
 	}
 
 	public List<DonationDetailModel> getAllDonation() {
-		String query = "SELECT donation_details.*, donation.donation_id, book.title FROM lib.donation_details\r\n"
-				+ "INNER JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
+		String query = "SELECT donation_details.*, donation.*, book.title FROM lib.donation_details\r\n"
+				+ "FULL JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
 				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id\r\n"
 				+ "ORDER BY donation_details.donation_id ASC;";
 		List<DonationDetailModel> detail = new ArrayList<>();
@@ -107,8 +109,9 @@ public class DonationDetailController {
 				DonationDetailModel dd = new DonationDetailModel();
 				dd.setDonationId(rs.getString("donation_id"));
 				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setDate(rs.getString("date"));
 				dd.setBookId(rs.getString("book_id"));
-				dd.setBookName(rs.getString("title"));				
+				dd.setTitle(rs.getString("title"));
 				dd.setQty(rs.getInt("donated_qty"));
 
 				detail.add(dd);
@@ -118,13 +121,12 @@ public class DonationDetailController {
 		}
 		return detail;
 	}
-	
-	public DonationDetailModel getOneDonationById(DonationDetailModel detail) {
-		String query = "SELECT donation_details.*, donation.donation_id, book.title FROM lib.donation_details\r\n"
-				+ "INNER JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
-				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id\r\n"
-				+ "ORDER BY donation_details.donation_id ASC;";
 
+	public DonationDetailModel getOneDonationById(DonationDetailModel detail) {
+		String query = "SELECT donation_details.*, donation.*, book.title FROM lib.donation_details\r\n"
+				+ "FULL JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
+				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id\r\n"
+				+ "ORDER BY donation.donation_id ASC;";
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, detail.getDonationId());
@@ -134,8 +136,9 @@ public class DonationDetailController {
 				DonationDetailModel dd = new DonationDetailModel();
 				dd.setDonationId(rs.getString("donation_id"));
 				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setDate(rs.getString("date"));
 				dd.setBookId(rs.getString("book_id"));
-				dd.setBookName(rs.getString("title"));				
+				dd.setTitle(rs.getString("title"));
 				dd.setQty(rs.getInt("donated_qty"));
 
 				return dd;
@@ -145,7 +148,37 @@ public class DonationDetailController {
 		}
 		return null;
 	}
-	
+
+	public DonationDetailModel getOneDonationById(String id) {
+//		String query = "SELECT donation_details.*, donation.*, book.title FROM lib.donation_details "
+//				+ "FULL JOIN lib.donation ON donation_details.donation_id = donation.donation_id "
+//				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id WHERE donation_id=?"
+//				+ "ORDER BY donation.donation_id ASC;";
+		
+		String query = "SELECT * FROM lib.donation JOIN lib.donator ON donation.donator_id=donator.donator_id WHERE donation_id=? ORDER BY donation_id ASC;";
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, id);
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				DonationDetailModel dd = new DonationDetailModel();
+				dd.setDonationId(rs.getString("donation_id"));
+				dd.setDonatorId(rs.getString("donator_id"));
+//				dd.setDonatorName(rs.getString("donator_name"));
+				dd.setDate(rs.getString("date"));
+//				dd.setBookId(rs.getString("book_id"));
+//				dd.setTitle(rs.getString("title"));
+				dd.setQty(rs.getInt("total_qty"));
+
+				return dd;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 	public static String getIdByName(String name) {
 		String query = "SELECT * FROM lib.book WHERE title=?";
 
@@ -163,26 +196,26 @@ public class DonationDetailController {
 		}
 		return null;
 	}
-	
-	public static String getIdById(String id) {
-		String query = "SELECT * FROM lib.donation WHERE donator_id=?";
 
-		try {
-			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
-			ps.setString(1, id);
+	/*
+	 * If Donation ID is selected, to show Donation data in DonationDetailDialogView
+	 */
 
-			ResultSet rs = ps.executeQuery();
+	public List<DonationDetailModel> searchDonation(DonationDetailModel detail) throws SQLException {
+		List<DonationDetailModel> list = new ArrayList<DonationDetailModel>();
+		String sql = "SELECT * FROM lib.donation WHERE donation_id=? ORDER BY donation_id ASC";
+		PreparedStatement ps = (PreparedStatement) con.prepareStatement(sql);
+		ps.setString(1, detail.getDonationId());
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+			DonationDetailModel dd = new DonationDetailModel();
+			dd.setDonationId(rs.getString("donation_id"));
+			dd.setDonatorId(rs.getString("donator_id"));
+			dd.setDate(rs.getString("date"));
 
-			if (rs.next()) {
-				return rs.getString("donation_id");
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+			list.add(dd);
 		}
-		return null;
+		return list;
 	}
-
-	
-	
 
 }

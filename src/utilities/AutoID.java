@@ -35,23 +35,16 @@ public class AutoID {
 			
 			if(results.size() > 0) {
 				String[] num = results.get(results.size()-1).split("-");
-				System.out.println(results.size()-1);
-				System.out.println(num[0]);
-				System.out.println(num[1]);
 				String incrementedNum = Integer.parseInt(num[1]) + 1 + "";
 
 				switch (incrementedNum.length()) {
 				case 1:
-					System.out.println("000" + incrementedNum);
 					return (num[0] + "-000" + incrementedNum);
 				case 2:
-					System.out.println("-00" + incrementedNum);
 					return (num[0] + "-00" + incrementedNum);
 				case 3:
-					System.out.println("0" + incrementedNum);
 					return (num[0] + "-0" + incrementedNum);
 				case 4:
-					System.out.println(incrementedNum);
 					return num[0] + "-" + incrementedNum;
 				}
 			}

@@ -47,6 +47,8 @@ public class GenreDialogView extends JDialog {
 	
 	public static void showDialog() {
 		try {
+			update = false;
+
 			dialog = new GenreDialogView();
 			dialog.setTitle(AutoID.getPK("genre_id", "genre", "GEN-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

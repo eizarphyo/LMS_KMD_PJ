@@ -61,6 +61,8 @@ public class DonatorDialogView extends JDialog {
 
 	public static void showDialog() {
 		try {
+			update = false;
+
 			dialog = new DonatorDialogView();
 			dialog.setTitle(AutoID.getPK("donator_id", "donator", "DNT-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -171,7 +173,7 @@ public class DonatorDialogView extends JDialog {
 				donator.setEmail(txtEmail.getText());
 				donator.setAddress(txtAddress.getText());
 
-				if (ctl.hasDuplicateName(donator)) {
+				if (ctl.hasDuplicateName(donator) && !update) {
 					JOptionPane.showMessageDialog(null, "Donator Name Already Exists!");
 					return;
 				}

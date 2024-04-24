@@ -46,6 +46,8 @@ public class PublisherDialogView extends JDialog {
 	
 	public static void showDialog() {
 		try {
+			update = false;
+
 			dialog = new PublisherDialogView();
 			dialog.setTitle(AutoID.getPK("publisher_id", "publisher", "PUB-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);

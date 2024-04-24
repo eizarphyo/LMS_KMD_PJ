@@ -11,6 +11,8 @@ public class ReturnModel {
 	private int lateFine;
 	private int totalFine;
 	
+	private String stuName;
+	
 	public String getReturnId() {
 		return returnId;
 	}
@@ -53,6 +55,12 @@ public class ReturnModel {
 	}
 	public void setTotalFine(int totalFine) {
 		this.totalFine = totalFine;
+	}
+	public String getStuName() {
+		return stuName;
+	}
+	public void setStuName(String stuName) {
+		this.stuName = stuName;
 	}
 	
 	

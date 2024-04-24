@@ -174,8 +174,26 @@ public class BookController {
 		return null;
 	}
 
+	public static int getQty(String id) {
+		String query = "SELECT qty FROM lib.book WHERE book_id=?";
+		
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, id);
+			
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next()) {
+				return rs.getInt("qty");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
 	
-	public int updateQty(BookModel book) {
+	public static int updateQty(BookModel book) {
 		String query = "UPDATE lib.book SET qty=? WHERE book_id=?";
 
 		try {

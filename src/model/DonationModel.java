@@ -3,8 +3,9 @@ package model;
 public class DonationModel {
 	private String donationId;
 	private String donatorId;
-//	private String donatorName;
+	private String donatorName;
 	private String date;
+	private int totalQty;
 	public String getDonationId() {
 		return donationId;
 	}
@@ -17,17 +18,23 @@ public class DonationModel {
 	public void setDonatorId(String donatorId) {
 		this.donatorId = donatorId;
 	}
-	
-//	public String getDonatorName() {
-//		return donatorName;
-//	}
-//	public void setDonatorName(String donatorName) {
-//		this.donatorName = donatorName;
-//	}
+	public String getDonatorName() {
+		return donatorName;
+	}
+	public void setDonatorName(String donatorName) {
+		this.donatorName = donatorName;
+	}
 	public String getDate() {
 		return date;
 	}
 	public void setDate(String date) {
 		this.date = date;
 	}
+	public int getTotalQty() {
+		return totalQty;
+	}
+	public void setTotalQty(int totalQty) {
+		this.totalQty = totalQty;
+	}
+	
 }
