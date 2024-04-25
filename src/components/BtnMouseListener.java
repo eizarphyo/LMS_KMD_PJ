@@ -8,7 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 
 import utilities.LibColors;
-import view.Test;
+import view.AdminMain;
 
 public class BtnMouseListener extends MouseAdapter {
 	public static MouseAdapter getListener(JButton btn) {
@@ -26,7 +26,7 @@ public class BtnMouseListener extends MouseAdapter {
 			public void mouseExited(MouseEvent e) {
 				if (btn.isEnabled()) {
 					btn.setBackground(LibColors.PRIMARY_BG);
-					btn.setBorder(BorderFactory.createLineBorder(new Color(89,89,89)));
+					btn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY));
 //					btn.setBorder(BorderFactory.createBevelBorder(0));
 				}
 			}
@@ -60,7 +60,7 @@ public class BtnMouseListener extends MouseAdapter {
 			public void mouseExited(MouseEvent e) {
 				btn.setBorder(BorderFactory.createBevelBorder(0, Color.LIGHT_GRAY, Color.GRAY));
 
-				if (btn.equals(Test.obj)) {
+				if (btn.equals(AdminMain.obj)) {
 					btn.setOpaque(true);
 					return;
 				}
@@ -69,7 +69,7 @@ public class BtnMouseListener extends MouseAdapter {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				for (JButton b : Test.getBtns()) {
+				for (JButton b : AdminMain.getBtns()) {
 					if (!b.equals(btn)) {
 						b.setOpaque(false); // false -> transparent
 

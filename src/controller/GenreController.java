@@ -130,6 +130,8 @@ public class GenreController {
 		}
 		return null;
 	}
+	
+	
 
 	public GenreModel getOneById(GenreModel genre) {
 		String query = "SELECT * FROM lib.genre WHERE genre_id=?";
@@ -150,6 +152,29 @@ public class GenreController {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	public static List<GenreModel> searchByName(String name) {
+		String query = "SELECT * FROM lib.genre WHERE genre_name LIKE ? ORDER BY genre_name ASC";
+		List<GenreModel> genres = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				GenreModel g = new GenreModel();
+				g.setId(rs.getString("genre_id"));
+				g.setName(rs.getString("genre_name"));
+
+				genres.add(g);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return genres;
 	}
 
 }

@@ -113,7 +113,7 @@ public class DonatorDialogView extends JDialog {
 		contentPanel.setLayout(null);
 
 		JLabel lblName = new JLabel("Name:");
-		lblName.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblName.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblName.setBounds(55, 63, 100, 20);
 		lblName.requestFocus();
 		contentPanel.add(lblName);
@@ -121,41 +121,48 @@ public class DonatorDialogView extends JDialog {
 		txtName = new JTextField();
 		txtName.addFocusListener(TxtFieldFocusListener.getFocusListener(txtName));
 
-		txtName.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtName.setBounds(179, 63, 200, 20);
+		txtName.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtName.setBounds(179, 63, 200, 25);
 		contentPanel.add(txtName);
 		txtName.setColumns(10);
 
 		JLabel lblPhone = new JLabel("Phone No:");
-		lblPhone.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblPhone.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblPhone.setBounds(55, 109, 100, 20);
 		contentPanel.add(lblPhone);
 
 		txtPhone = new JTextField();
-		// txtPhone.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPhone));
+		 txtPhone.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPhone));
 
-		txtPhone.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtPhone.setBounds(179, 109, 200, 20);
+		txtPhone.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtPhone.setBounds(179, 109, 200, 25);
 		contentPanel.add(txtPhone);
 		txtPhone.setColumns(10);
 
 		JLabel lblEmail = new JLabel("Email:");
-		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblEmail.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblEmail.setBounds(55, 160, 100, 20);
 		contentPanel.add(lblEmail);
 
 		txtEmail = new JTextField();
-		// txtPhone.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPhone));
+		txtEmail.addFocusListener(TxtFieldFocusListener.getFocusListener(txtEmail));
 
-		txtEmail.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtEmail.setBounds(179, 160, 200, 20);
+		txtEmail.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtEmail.setBounds(179, 160, 200, 25);
 		contentPanel.add(txtEmail);
 		txtEmail.setColumns(10);
 
 		JLabel lblAddress = new JLabel("Address:");
-		lblAddress.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblAddress.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblAddress.setBounds(55, 211, 100, 20);
 		contentPanel.add(lblAddress);
+		
+		txtAddress = new JTextArea();
+		txtAddress.addFocusListener(TxtFieldFocusListener.getFocusListener(txtAddress));
+		txtAddress.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1));
+		txtAddress.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtAddress.setBounds(179, 211, 200, 50);
+		contentPanel.add(txtAddress);
 
 		btnAdd = new JButton(update ? "Update" : "Add");
 		btnAdd.addActionListener(new ActionListener() {
@@ -193,7 +200,7 @@ public class DonatorDialogView extends JDialog {
 		});
 		MyBtn.changeMyBtnStyle(btnAdd);
 		btnAdd.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnAdd.setBounds(175, 292, 89, 25);
+		btnAdd.setBounds(175, 292, 89, 27);
 		contentPanel.add(btnAdd);
 
 		JLabel lbl = new JLabel("Donator Entry");
@@ -202,10 +209,7 @@ public class DonatorDialogView extends JDialog {
 		lbl.setBounds(10, 10, 416, 25);
 		contentPanel.add(lbl);
 
-		txtAddress = new JTextArea();
-		txtAddress.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtAddress.setBounds(179, 211, 200, 50);
-		contentPanel.add(txtAddress);
+		
 
 	}
 
@@ -225,7 +229,7 @@ public class DonatorDialogView extends JDialog {
 			txtPhone.selectAll();
 			return false;
 		} else if (txtPhone.getText().length() != 11) {
-			JOptionPane.showMessageDialog(null, "Invalid Phone No");
+			JOptionPane.showMessageDialog(null, "Invalid Phone No\nRequired Format: 09XXXXXXXXX");
 			txtPhone.requestFocus();
 			txtPhone.selectAll();
 			return false;

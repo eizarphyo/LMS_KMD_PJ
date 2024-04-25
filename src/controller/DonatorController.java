@@ -211,5 +211,32 @@ public class DonatorController {
 		}
 		return null;
 	}
+	
+	public static List<DonatorModel> searchByName(String name) {
+		String query = "SELECT * FROM lib.donator WHERE donator_name LIKE ? ORDER BY donator_name ASC";
+		List<DonatorModel> donators = new ArrayList<>();
+
+		PreparedStatement ps;
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				DonatorModel donator = new DonatorModel();
+
+				donator.setDonatorId(rs.getString("donator_id"));
+				donator.setDonatorName(rs.getString("donator_name"));
+				donator.setPhone(rs.getString("phone"));
+				donator.setEmail(rs.getString("email"));
+				donator.setAddress(rs.getString("address"));
+
+				donators.add(donator);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return donators;
+	}
 
 }

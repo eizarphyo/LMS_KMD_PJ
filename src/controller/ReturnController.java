@@ -96,7 +96,6 @@ public class ReturnController {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ResultSet rs = ps.executeQuery();
 
-			System.out.println("------");
 			while (rs.next()) {
 				ReturnModel returned = new ReturnModel();
 
@@ -151,6 +150,80 @@ public class ReturnController {
 				
 				StudentModel student = new StudentModel();
 				student.setStuId(returnlist.getStuId());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return returnlist;
+	}
+	
+	// static methods
+	public static List<ReturnModel> getAllReturnsByDate(java.sql.Date date) {
+		String query = "SELECT * FROM lib.return JOIN lib.student ON lib.return.stu_id=student.stu_id WHERE returned_at=? ORDER BY return_id DESC";
+		List<ReturnModel> returnlist = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setDate(1, date);
+			ResultSet rs = ps.executeQuery();
+
+			System.out.println("------");
+			while (rs.next()) {
+				ReturnModel returned = new ReturnModel();
+
+				returned.setReturnId(rs.getString("return_id"));
+				returned.setBorrowId(rs.getString("borrow_id"));
+				returned.setStuId(rs.getString("stu_id"));
+				returned.setReturnedAt(rs.getDate("returned_at"));
+				returned.setReturnedQty(rs.getInt("returned_qty"));
+				returned.setLateFine(rs.getInt("late_fine"));
+				returned.setTotalFine(rs.getInt("total_fine"));
+				
+				returned.setStuName(rs.getString("stu_name"));
+				
+				BorrowModel borrow = new BorrowModel();
+				borrow.setBorrowId(returned.getBorrowId());
+				
+				StudentModel student = new StudentModel();
+				student.setStuId(returned.getStuId());
+
+				returnlist.add(returned);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return returnlist;
+	}
+	
+	public static List<ReturnModel> searchByStudentName(String name) {
+		String query = "SELECT * FROM lib.return JOIN lib.student ON lib.return.stu_id=student.stu_id WHERE stu_name LIKE ? ORDER BY stu_name ASC";
+		List<ReturnModel> returnlist = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				ReturnModel returned = new ReturnModel();
+
+				returned.setReturnId(rs.getString("return_id"));
+				returned.setBorrowId(rs.getString("borrow_id"));
+				returned.setStuId(rs.getString("stu_id"));
+				returned.setReturnedAt(rs.getDate("returned_at"));
+				returned.setReturnedQty(rs.getInt("returned_qty"));
+				returned.setLateFine(rs.getInt("late_fine"));
+				returned.setTotalFine(rs.getInt("total_fine"));
+				
+				returned.setStuName(rs.getString("stu_name"));
+				
+				BorrowModel borrow = new BorrowModel();
+				borrow.setBorrowId(returned.getBorrowId());
+				
+				StudentModel student = new StudentModel();
+				student.setStuId(returned.getStuId());
+
+				returnlist.add(returned);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();

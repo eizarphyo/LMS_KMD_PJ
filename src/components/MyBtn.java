@@ -17,7 +17,7 @@ public class MyBtn {
 		btn.setContentAreaFilled(false);
 		btn.setOpaque(true);
 		
-		btn.setBorder(BorderFactory.createLineBorder(new Color(89,89,89), 1, false));
+		btn.setBorder(BorderFactory.createLineBorder(Color.LIGHT_GRAY, 1, false));
 //		btn.setBorder(BorderFactory.createBevelBorder(0));
 		btn.setFocusPainted(false); // Remove focus indication
 

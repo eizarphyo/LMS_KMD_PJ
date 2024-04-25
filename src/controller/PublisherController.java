@@ -155,4 +155,28 @@ public class PublisherController {
 		}
 		return null;
 	}
+	
+	public static List<PublisherModel> searchByName(String name) {
+		String query = "SELECT * FROM lib.publisher WHERE publisher_name LIKE ? ORDER BY publisher_name ASC";
+		List<PublisherModel> publishers = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				PublisherModel p = new PublisherModel();
+
+				p.setId(rs.getString("publisher_id"));
+				p.setName(rs.getString("publisher_name"));
+
+				publishers.add(p);
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return publishers;
+	}
 }

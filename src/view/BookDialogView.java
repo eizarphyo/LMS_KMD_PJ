@@ -59,7 +59,7 @@ public class BookDialogView extends JDialog {
 	private static boolean update = false;
 	private static JLabel lblImg;
 	
-	private byte[] imgBytes;
+	private static byte[] imgBytes;
 
 	/**
 	 * Launch the application.
@@ -108,6 +108,7 @@ public class BookDialogView extends JDialog {
 			cboPublisher.setSelectedItem(b.getPublisherName());
 			txtPubYr.setText(b.getPuplishedYr() + "");
 			txtPrice.setText(b.getPrice() + "");
+			imgBytes = b.getImage();
 			
 			if(b.getImage() != null) {
 				// Convert the byte array to an Image object
@@ -118,7 +119,7 @@ public class BookDialogView extends JDialog {
 
                 // Set the image to the JLabel
                 lblImg.setText("");
-				lblImg.setOpaque(false);
+				lblImg.setOpaque(false); 
 				lblImg.setIcon(new ImageIcon(image));	
 			} 
 
@@ -132,7 +133,7 @@ public class BookDialogView extends JDialog {
 	 * Create the dialog.
 	 */
 	public BookDialogView() {
-		setBounds(100, 100, 450, 516);
+		setBounds(100, 100, 450, 524);
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
 		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
@@ -144,7 +145,7 @@ public class BookDialogView extends JDialog {
 		contentPanel.setLayout(null);
 
 		JLabel lblTitle = new JLabel("Title:");
-		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblTitle.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblTitle.setBounds(55, 180, 100, 20);
 		lblTitle.requestFocus();
 		contentPanel.add(lblTitle);
@@ -152,13 +153,13 @@ public class BookDialogView extends JDialog {
 		txtTitle = new JTextField();
 		txtTitle.addFocusListener(TxtFieldFocusListener.getFocusListener(txtTitle));
 
-		txtTitle.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtTitle.setBounds(179, 180, 200, 20);
+		txtTitle.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtTitle.setBounds(179, 180, 200, 25);
 		contentPanel.add(txtTitle);
 		txtTitle.setColumns(10);
 
 		JLabel lblAuthor = new JLabel("Author:");
-		lblAuthor.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblAuthor.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblAuthor.setBounds(55, 220, 100, 20);
 		contentPanel.add(lblAuthor);
 
@@ -169,7 +170,7 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(cboAuthor);
 
 		JLabel lblGenre = new JLabel("Genre:");
-		lblGenre.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblGenre.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblGenre.setBounds(55, 260, 100, 20);
 		contentPanel.add(lblGenre);
 
@@ -180,7 +181,7 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(cboGenre);
 
 		JLabel lblPublisher = new JLabel("Publisher:");
-		lblPublisher.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblPublisher.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblPublisher.setBounds(55, 300, 100, 20);
 		contentPanel.add(lblPublisher);
 
@@ -192,26 +193,27 @@ public class BookDialogView extends JDialog {
 		contentPanel.add(cboPublisher);
 
 		JLabel lblPublishedYr = new JLabel("Published Year:");
-		lblPublishedYr.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblPublishedYr.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblPublishedYr.setBounds(55, 340, 100, 20);
 		contentPanel.add(lblPublishedYr);
 
 		txtPubYr = new JTextField();
 		txtPubYr.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPubYr));
-		txtPubYr.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtPubYr.setBounds(179, 340, 200, 20);
+		txtPubYr.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtPubYr.setBounds(179, 340, 200, 25);
 		contentPanel.add(txtPubYr);
 		txtPubYr.setColumns(10);
 
 		JLabel lblNewLabel = new JLabel("Price:");
-		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 14));
+		lblNewLabel.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblNewLabel.setBounds(55, 380, 100, 20);
 		contentPanel.add(lblNewLabel);
 
 		txtPrice = new JTextField();
+		txtPrice.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtPrice.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPrice));
-		txtPrice.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtPrice.setBounds(179, 380, 200, 20);
+		txtPrice.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtPrice.setBounds(179, 380, 70, 25);
 		contentPanel.add(txtPrice);
 		txtPrice.setColumns(10);
 
@@ -282,6 +284,11 @@ public class BookDialogView extends JDialog {
 		lblImg.setHorizontalAlignment(SwingConstants.CENTER);
 		lblImg.setBounds(168, 46, 100, 110);
 		contentPanel.add(lblImg);
+		
+		JLabel lblCurrency = new JLabel("MMK");
+		lblCurrency.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblCurrency.setBounds(255, 378, 30, 25);
+		contentPanel.add(lblCurrency);
 
 		fillComboBoxes();
 

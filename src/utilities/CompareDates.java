@@ -19,7 +19,7 @@ public class CompareDates {
         long daysDifference = ChronoUnit.DAYS.between(firstDate, currentDate);
 
         // Check if the difference is greater than 7 days
-        if (daysDifference > 1) {
+        if (daysDifference > 7) {
 //            System.out.println("Current date is over 7 days after the first date.");
             return true;
         } else {

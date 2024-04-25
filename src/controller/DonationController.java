@@ -36,7 +36,7 @@ public class DonationController {
 			ps.setString(1, donation.getDonationId());
 			ps.setString(2, donation.getDonatorId());
 			ps.setString(3, donation.getDate());
-			ps.setInt(4, donation.getTotalQty());			
+			ps.setInt(4, donation.getTotalQty());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -45,17 +45,16 @@ public class DonationController {
 		}
 	}
 
-	public int update(DonationModel donation)  {
+	public int update(DonationModel donation) {
 		String query = "UPDATE lib.donation SET donator_id=?,date=?, total_qty=? WHERE donation_id=?";
 
-		PreparedStatement ps;
 		try {
-			ps = (PreparedStatement) con.prepareStatement(query);
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, donation.getDonatorId());
 			ps.setString(2, donation.getDate());
-			ps.setInt(3, donation.getTotalQty());			
-			ps.setString(4, donation.getDonatorId());
-			
+			ps.setInt(3, donation.getTotalQty());
+			ps.setString(4, donation.getDonationId());
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -70,7 +69,7 @@ public class DonationController {
 		try {
 			ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, donation.getDonationId());
-			
+
 			return ps.executeUpdate();
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -95,7 +94,7 @@ public class DonationController {
 				donation.setDate(rs.getString("date"));
 				donation.setTotalQty(rs.getInt("total_qty"));
 				donation.setDonatorName(rs.getString("donator_name"));
-				
+
 				DonatorModel donator = new DonatorModel();
 				donator.setDonatorId(donation.getDonatorId());
 
@@ -108,8 +107,8 @@ public class DonationController {
 	}
 
 	public DonationModel getOneDonationById(DonationModel data) {
-		String query = "SELECT * FROM lib.donation WHERE donation_id=?";
-		
+		String query = "SELECT * FROM lib.donation JOIN lib.donator ON donation.donator_id=donator.donator_id WHERE donation_id=?";
+
 		DonationModel donation = new DonationModel();
 
 		PreparedStatement ps;
@@ -121,7 +120,7 @@ public class DonationController {
 
 			if (rs.next()) {
 				donation.setDonationId(rs.getString("donation_id"));
-				donation.setDonationId(rs.getString("donator"));
+				donation.setDonatorName(rs.getString("donator_name"));
 				donation.setDate(rs.getString("date"));
 				donation.setTotalQty(rs.getInt("total_qty"));
 
@@ -133,5 +132,34 @@ public class DonationController {
 			e.printStackTrace();
 		}
 		return donation;
+	}
+
+	public static List<DonationModel> searchByDonatorName(String name) {
+		String query = "SELECT * FROM lib.donation JOIN lib.donator ON donation.donator_id=donator.donator_id WHERE donator_name LIKE ? ORDER BY donator_name ASC";
+		List<DonationModel> donations = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				DonationModel donation = new DonationModel();
+
+				donation.setDonationId(rs.getString("donation_id"));
+				donation.setDonatorId(rs.getString("donator_id"));
+				donation.setDate(rs.getString("date"));
+				donation.setTotalQty(rs.getInt("total_qty"));
+				donation.setDonatorName(rs.getString("donator_name"));
+
+				DonatorModel donator = new DonatorModel();
+				donator.setDonatorId(donation.getDonatorId());
+
+				donations.add(donation);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return donations;
 	}
 }

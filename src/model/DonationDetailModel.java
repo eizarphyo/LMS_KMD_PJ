@@ -11,8 +11,7 @@ public class DonationDetailModel {
 	private String bookId;
 	private String title;
 	private int qty;
-	
-	
+	private String authorName;
 	
 	public String getDonationId() {
 		return donationId;
@@ -52,4 +51,11 @@ public class DonationDetailModel {
 	public void setTitle(String title) {
 		this.title = title;
 	}
+	public String getAuthorName() {
+		return authorName;
+	}
+	public void setAuthorName(String authorName) {
+		this.authorName = authorName;
+	}
+	
 }

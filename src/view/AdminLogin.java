@@ -134,7 +134,7 @@ public class AdminLogin extends JDialog {
 			user.setPassword(new String(txtPass.getPassword()));
 			
 			if(ctl.login(user)) {
-				Test.showFrame();
+				AdminMain.showFrame();
 				dispose();
 			} else {
 				JOptionPane.showMessageDialog(null, "Username and Passord combination is incorrect");

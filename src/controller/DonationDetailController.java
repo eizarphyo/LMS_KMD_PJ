@@ -44,14 +44,14 @@ public class DonationDetailController {
 	}
 
 	public int update(DonationDetailModel detail) {
-		String query = "UPDATE lib.donation_details SET book_id=?, donated_qty=? WHERE donation_id=?";
+		String query = "UPDATE lib.donation_details SET donated_qty=? WHERE donation_id=? AND book_id=?";
 
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 
-			ps.setString(1, detail.getBookId());
-			ps.setInt(2, detail.getQty());
-			ps.setString(4, detail.getDonationId());
+			ps.setInt(1, detail.getQty());
+			ps.setString(2, detail.getDonationId());
+			ps.setString(3, detail.getBookId());
 
 			return ps.executeUpdate();
 		} catch (SQLException e) {
@@ -197,25 +197,31 @@ public class DonationDetailController {
 		return null;
 	}
 
-	/*
-	 * If Donation ID is selected, to show Donation data in DonationDetailDialogView
-	 */
+	public static List<DonationDetailModel> getAllDonationsById(String id) {
+		String query ="SELECT * FROM donation_details JOIN lib.book ON donation_details.book_id=book.book_id JOIN author on book.author_id=author.author_id JOIN donation ON donation_details.donation_id=donation.donation_id WHERE donation_details.donation_id=? ORDER BY book.title ASC;";
+		List<DonationDetailModel> detail = new ArrayList<>();
 
-	public List<DonationDetailModel> searchDonation(DonationDetailModel detail) throws SQLException {
-		List<DonationDetailModel> list = new ArrayList<DonationDetailModel>();
-		String sql = "SELECT * FROM lib.donation WHERE donation_id=? ORDER BY donation_id ASC";
-		PreparedStatement ps = (PreparedStatement) con.prepareStatement(sql);
-		ps.setString(1, detail.getDonationId());
-		ResultSet rs = ps.executeQuery();
-		if (rs.next()) {
-			DonationDetailModel dd = new DonationDetailModel();
-			dd.setDonationId(rs.getString("donation_id"));
-			dd.setDonatorId(rs.getString("donator_id"));
-			dd.setDate(rs.getString("date"));
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, id);
+			ResultSet rs = ps.executeQuery();
 
-			list.add(dd);
+			while (rs.next()) {
+				DonationDetailModel dd = new DonationDetailModel();
+				dd.setDonationId(rs.getString("donation_id"));
+				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setDate(rs.getString("date"));
+				dd.setBookId(rs.getString("book_id"));
+				dd.setTitle(rs.getString("title"));
+				dd.setQty(rs.getInt("donated_qty"));
+				dd.setAuthorName(rs.getString("author_name"));
+
+				detail.add(dd);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
-		return list;
+		return detail;
 	}
 
 }

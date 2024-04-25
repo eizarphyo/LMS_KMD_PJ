@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JDialog;
@@ -54,24 +55,24 @@ public class DonationView extends JDialog {
 	private static final long serialVersionUID = 1L;
 
 	private static JButton btnSave;
-	private static JComboBox<String> cboDonatorId;
+	private static JComboBox<String> cboDonatorName;
 	private static JComboBox<String> cboTitle;
 	private static JTextField txtQty;
 	private static DonationView dialog;
 	private static boolean update = false;
-	private static Border b = BorderFactory.createLineBorder(Color.gray);
+	private static Border b = BorderFactory.createMatteBorder(0, 0, 1, 0, Color.LIGHT_GRAY);
 	private final JPanel contentPanel = new JPanel();
 
-	private JLabel lblDonationid;
-	private JLabel lblDonatorname;
-	private JLabel lblDonatorName;
-	private JLabel lblDate;
+	private JLabel lblDonationname;
+	private JLabel lblDonatorid;
+	private JLabel lblDonatorId;
+	private static JLabel lblDate;
 	private JLabel lblBook;
 	private JLabel lblQty;
 	private JTable tblBooks;
-	private DefaultTableModel dtm = new DefaultTableModel();
+	private static DefaultTableModel dtm = new DefaultTableModel();
 	private JLabel lblAuthor;
-	private Vector<BookModel> selectedBooks = new Vector<>();
+	private static Vector<BookModel> selectedBooks = new Vector<>();
 	private JLabel lblId;
 	private JLabel lblBookId;
 	private JButton btnAdd;
@@ -81,16 +82,16 @@ public class DonationView extends JDialog {
 	/**
 	 * Launch the application.
 	 */
-	public static void main(String[] args) {
-		try {
-			dialog = new DonationView();
-			dialog.setTitle(AutoID.getPK("donation_id", "donation", "DON-"));
-			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-			dialog.setVisible(true);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
+//	public static void main(String[] args) {
+//		try {
+//			dialog = new DonationView();
+//			dialog.setTitle(AutoID.getPK("donation_id", "donation", "DON-"));
+//			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+//			dialog.setVisible(true);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 	public static void showDialog() {
 		try {
@@ -109,15 +110,32 @@ public class DonationView extends JDialog {
 		try {
 			update = true;
 			dialog = new DonationView();
-			dialog.setTitle(AutoID.getPK("donation_id", "donation", "DON-"));
+			dialog.setTitle(id);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
-			DonationDetailController ctl = new DonationDetailController();
-			DonationDetailModel dd  = ctl.getOneDonationById(id);
-
-			cboDonatorId.setSelectedItem(dd.getDonationId());
-			cboTitle.setSelectedItem(dd.getTitle());
-			txtQty.setText(dd.getQty() + "");
+			DonationController ctl = new DonationController();
+			DonationModel don = new DonationModel();
+			don.setDonationId(id);
+			
+			don = ctl.getOneDonationById(don);
+			cboDonatorName.setSelectedItem(don.getDonatorName());
+			
+			List<DonationDetailModel> details = DonationDetailController.getAllDonationsById(id);
+			lblDate.setText(details.get(0).getDate());
+			
+			for(DonationDetailModel d: details) {
+				BookModel book = new BookModel();
+				book.setId(d.getBookId());
+				book.setTitle(d.getTitle());
+				book.setAuthorName(d.getAuthorName());
+				book.setQty(d.getQty());
+				selectedBooks.add(book);
+			}
+			
+			updateTableRows();
+			
+			cboTitle.setSelectedIndex(0);
+			txtQty.setText("");
 
 			dialog.setVisible(true);
 		} catch (Exception e) {
@@ -130,8 +148,9 @@ public class DonationView extends JDialog {
 	 */
 	public DonationView() {
 		setTitle("Donation Detail Dialog View");
+		selectedBooks.clear();
 
-		setBounds(120, 100, 549, 576);
+		setBounds(120, 100, 549, 597);
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
 		int centerX = (int) (screenDimension.getWidth() - getWidth()) / 2;
 		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
@@ -148,35 +167,37 @@ public class DonationView extends JDialog {
 		lbl.setBounds(10, 10, 529, 25);
 		contentPanel.add(lbl);
 
-		lblDonationid = new JLabel("Donator ID:");
-		lblDonationid.setBounds(10, 66, 100, 25);
-		lblDonationid.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		contentPanel.add(lblDonationid);
+		lblDonationname = new JLabel("Donator Name:");
+		lblDonationname.setBounds(10, 66, 100, 25);
+		lblDonationname.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		contentPanel.add(lblDonationname);
 
-		cboDonatorId = new JComboBox<String>();
-		cboDonatorId.addActionListener(new ActionListener() {
+		cboDonatorName = new JComboBox<String>();
+		MyComboBox.changeMyCboStyle(cboDonatorName);
+		cboDonatorName.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (cboDonatorId.getSelectedIndex() > 0) {
-					String donatorName = DonatorController.getNameById(cboDonatorId.getSelectedItem().toString());
-					lblDonatorName.setText(donatorName);
+				if (cboDonatorName.getSelectedIndex() > 0) {
+					String donatorId = DonatorController.getIdByName(cboDonatorName.getSelectedItem().toString());
+					lblDonatorId.setText(donatorId);
 				}
 			}
 		});
-		cboDonatorId.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		cboDonatorId.setBounds(120, 66, 130, 26);
-		cboDonatorId.setBorder(b);
-		contentPanel.add(cboDonatorId);
+		cboDonatorName.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		cboDonatorName.setBounds(120, 66, 200, 25);
+		contentPanel.add(cboDonatorName);
 
-		lblDonatorname = new JLabel("Donator Name:");
-		lblDonatorname.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblDonatorname.setBounds(265, 66, 100, 25);
-		contentPanel.add(lblDonatorname);
+		lblDonatorid = new JLabel("Donator ID:");
+		lblDonatorid.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblDonatorid.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblDonatorid.setBounds(355, 66, 100, 25);
+		contentPanel.add(lblDonatorid);
 
-		lblDonatorName = new JLabel("");
-		lblDonatorName.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblDonatorName.setBounds(375, 66, 150, 25);
-		lblDonatorName.setBorder(b);
-		contentPanel.add(lblDonatorName);
+		lblDonatorId = new JLabel("");
+		lblDonatorId.setHorizontalAlignment(SwingConstants.TRAILING);
+		lblDonatorId.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblDonatorId.setBounds(465, 66, 60, 25);
+		lblDonatorId.setBorder(b);
+		contentPanel.add(lblDonatorId);
 
 		lblDate = new JLabel(ChangeDate.toMyDateFormat());
 		lblDate.setHorizontalAlignment(SwingConstants.TRAILING);
@@ -190,6 +211,7 @@ public class DonationView extends JDialog {
 		contentPanel.add(lblBook);
 
 		cboTitle = new JComboBox<String>();
+		MyComboBox.changeMyCboStyle(cboTitle);
 		cboTitle.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (cboTitle.getSelectedIndex() > 0) {
@@ -203,7 +225,7 @@ public class DonationView extends JDialog {
 		});
 		cboTitle.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		cboTitle.setBorder(b);
-		cboTitle.setBounds(120, 120, 405, 26);
+		cboTitle.setBounds(120, 120, 405, 25);
 		contentPanel.add(cboTitle);
 
 		lblQty = new JLabel("Donated Qty:");
@@ -212,6 +234,7 @@ public class DonationView extends JDialog {
 		contentPanel.add(lblQty);
 
 		txtQty = new JTextField();
+		txtQty.addFocusListener(TxtFieldFocusListener.getFocusListener(txtQty));
 		txtQty.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtQty.setHorizontalAlignment(SwingConstants.TRAILING);
 		txtQty.setBounds(395, 194, 130, 25);
@@ -225,7 +248,7 @@ public class DonationView extends JDialog {
 		panelTable.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(0, 0, 515, 216);
+		scrollPane.setBounds(0, 0, 515, 228);
 		panelTable.add(scrollPane);
 
 		tblBooks = new JTable();
@@ -233,14 +256,15 @@ public class DonationView extends JDialog {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				int r = tblBooks.getSelectedRow();
+				
+				cboTitle.setEnabled(false);
+				enableAddBtn(false);
 
 				lblBookId.setText(tblBooks.getValueAt(r, 1).toString());
 				cboTitle.setSelectedItem(tblBooks.getValueAt(r, 2).toString());
 				lblAuthor.setText(tblBooks.getValueAt(r, 3).toString());
 				txtQty.setText(tblBooks.getValueAt(r, 4).toString());
 				
-				cboTitle.setEnabled(false);
-				enableAddBtn(false);
 			}
 		});
 		tblBooks.setRowHeight(27);
@@ -262,6 +286,7 @@ public class DonationView extends JDialog {
 		scrollPane.setViewportView(tblBooks);
 
 		btnAdd = new JButton("Add");
+		MyBtn.changeMyBtnStyle(btnAdd);
 		btnAdd.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String title = cboTitle.getSelectedItem().toString();
@@ -277,7 +302,7 @@ public class DonationView extends JDialog {
 			}
 		});
 		btnAdd.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnAdd.setBounds(280, 230, 65, 25);
+		btnAdd.setBounds(280, 235, 65, 25);
 		contentPanel.add(btnAdd);
 
 		btnUpdate = new JButton("Update");
@@ -300,10 +325,12 @@ public class DonationView extends JDialog {
 			}
 		});
 		btnUpdate.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnUpdate.setBounds(355, 230, 80, 25);
+		btnUpdate.setBounds(355, 235, 80, 25);
 		contentPanel.add(btnUpdate);
 
 		btnDelete = new JButton("Delete");
+		btnDelete.setEnabled(false);
+		MyBtn.changeMyBtnStyle(btnDelete);
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String title = cboTitle.getSelectedItem().toString();
@@ -322,7 +349,7 @@ public class DonationView extends JDialog {
 			}
 		});
 		btnDelete.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		btnDelete.setBounds(445, 230, 80, 25);
+		btnDelete.setBounds(445, 235, 80, 25);
 		contentPanel.add(btnDelete);
 
 		JLabel lblauthor = new JLabel("Author:");
@@ -333,7 +360,7 @@ public class DonationView extends JDialog {
 		lblAuthor = new JLabel("");
 		lblAuthor.setBorder(b);
 		lblAuthor.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblAuthor.setBounds(120, 157, 150, 25);
+		lblAuthor.setBounds(120, 157, 200, 25);
 		contentPanel.add(lblAuthor);
 
 		lblId = new JLabel("Book ID:");
@@ -344,13 +371,13 @@ public class DonationView extends JDialog {
 		lblBookId = new JLabel("");
 		lblBookId.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblBookId.setBorder(b);
-		lblBookId.setBounds(120, 193, 150, 25);
+		lblBookId.setBounds(120, 193, 60, 25);
 		contentPanel.add(lblBookId);
 
-		btnSave = new JButton("Save");
+		btnSave = new JButton(update ? "Update" : "Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (cboDonatorId.getSelectedIndex()<=0 || selectedBooks.size() <= 0) {
+				if (cboDonatorName.getSelectedIndex()<=0 || selectedBooks.size() <= 0) {
 					JOptionPane.showMessageDialog(null, "Please select donator and donated books");
 					return;
 				}
@@ -360,7 +387,7 @@ public class DonationView extends JDialog {
 				DonationModel donation = new DonationModel();
 				donation.setDonationId(dialog.getTitle());
 				donation.setDate(lblDate.getText());
-				donation.setDonatorId(cboDonatorId.getSelectedItem().toString());
+				donation.setDonatorId(lblDonatorId.getText());
 				
 				int totalQty = 0;
 				for(BookModel book: selectedBooks) {
@@ -368,8 +395,9 @@ public class DonationView extends JDialog {
 				}
 				donation.setTotalQty(totalQty);
 				
-				if(dctl.insert(donation) != 1) {
-					JOptionPane.showMessageDialog(null, "Error creating donation");
+				int ok = update ? dctl.update(donation) : dctl.insert(donation);
+				if(ok < 1) {
+					JOptionPane.showMessageDialog(null, update ? "Error updating donation" : "Error creating donation");
 					return;
 				}
 				
@@ -381,8 +409,10 @@ public class DonationView extends JDialog {
 					detail.setBookId(book.getId());
 					detail.setQty(book.getQty());
 					
-					if(ctl.insert(detail) != 1) {
-						JOptionPane.showMessageDialog(null, "Error creating donation details");
+					ok = update ? ctl.update(detail) : ctl.insert(detail);
+					
+					if(ok != 1) {
+						JOptionPane.showMessageDialog(null, "Error "+ (update ? "updating" :"creating") +" donation details");
 						return;
 					}
 					
@@ -395,13 +425,14 @@ public class DonationView extends JDialog {
 
 				}
 				JOptionPane.showMessageDialog(null, "Success!");
+				MyTblFunctions.updateDonationsTable();
 				clearAll();
 			}
 		});
 		MyBtn.changeMyBtnStyle(btnSave);
 		btnSave.setFont(new Font("Tahoma", Font.PLAIN, 12));
 		btnSave.setBorder(b);
-		btnSave.setBounds(222, 503, 89, 27);
+		btnSave.setBounds(231, 513, 89, 27);
 		contentPanel.add(btnSave);
 
 		fillComboBoxes();
@@ -432,7 +463,7 @@ public class DonationView extends JDialog {
 	}
 
 	private boolean hasValidInputs() {
-		if (cboDonatorId.getSelectedIndex() < 1 || cboTitle.getSelectedIndex() < 1 || txtQty.getText().isBlank()) {
+		if (cboDonatorName.getSelectedIndex() < 1 || cboTitle.getSelectedIndex() < 1 || txtQty.getText().isBlank()) {
 			JOptionPane.showMessageDialog(null, "Please fill the required fields first");
 			txtQty.requestFocus();
 			return false;
@@ -445,7 +476,7 @@ public class DonationView extends JDialog {
 		return true;
 	}
 
-	void updateTableRows() {
+	static void updateTableRows() {
 		dtm.setRowCount(0);
 
 		String[] row = new String[5];
@@ -457,7 +488,7 @@ public class DonationView extends JDialog {
 			row[2] = book.getTitle();
 			row[3] = book.getAuthorName();
 			row[4] = book.getQty() + "";
-			;
+			
 
 			dtm.addRow(row);
 			i++;
@@ -485,21 +516,31 @@ public class DonationView extends JDialog {
 
 	void clearAll() {
 		dialog.setTitle(AutoID.getPK("donation_id", "donation", "DON-"));
-		cboDonatorId.setSelectedIndex(0);
-		lblDonatorName.setText("");
+		cboDonatorName.setSelectedIndex(0);
+		lblDonatorId.setText("");
 		clearBookInfo();
 		selectedBooks.clear();
 		dtm.setRowCount(0);
+	}
+	
+	void changeToBottomBorder(JTextField txt) {
+		BorderFactory.createCompoundBorder(
+	            txt.getBorder(),
+	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
 	}
 	
 	void enableAddBtn(boolean enable) {
 		btnAdd.setEnabled(enable);
 		btnUpdate.setEnabled(!enable);
 		btnDelete.setEnabled(!enable);
+		
+		MyBtn.changeMyBtnStyle(btnAdd);
+		MyBtn.changeMyBtnStyle(btnUpdate);
+		MyBtn.changeMyBtnStyle(btnDelete);
 	}
 
 	private void fillComboBoxes() {
-		MyComboBox.fillComboItems("donator", "donator_id", cboDonatorId);
+		MyComboBox.fillComboItems("donator", "donator_name", cboDonatorName);
 		MyComboBox.fillComboItems("book", "title", cboTitle);
 	}
 }

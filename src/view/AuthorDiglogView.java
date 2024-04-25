@@ -144,7 +144,7 @@ public class AuthorDiglogView extends JDialog {
 			}
 		});
 		btnAdd.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		btnAdd.setBounds(109, 92, 75, 25);
+		btnAdd.setBounds(109, 92, 75, 27);
 		contentPanel.add(btnAdd);
 	}
 

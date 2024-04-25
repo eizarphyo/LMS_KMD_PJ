@@ -23,6 +23,7 @@ import javax.swing.table.TableColumn;
 
 import components.MyBtn;
 import components.MyTable;
+import components.TxtFieldFocusListener;
 import controller.BookController;
 import controller.BorrowController;
 import controller.BorrowDetailController;
@@ -55,7 +56,7 @@ public class BorrowDialogView extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private static BorrowDialogView dialog;
 	private JTextField txtStuId;
-	private JTextField txtSearch;
+	private JTextField txtBookId;
 	private JTable tblBooks;
 	private DefaultTableModel dtm = new DefaultTableModel();
 	private List<BookModel> selectedBooks = new ArrayList<>();
@@ -91,7 +92,7 @@ public class BorrowDialogView extends JDialog {
 	 * Create the dialog.
 	 */
 	public BorrowDialogView() {
-		setBounds(100, 100, 553, 603);
+		setBounds(100, 100, 553, 547);
 //		setBounds(100, 100, 600, 578);
 
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
@@ -112,79 +113,88 @@ public class BorrowDialogView extends JDialog {
 
 		JLabel lblsid = new JLabel("Student ID:");
 		lblsid.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblsid.setBounds(21, 60, 100, 20);
+		lblsid.setBounds(21, 55, 100, 20);
 		contentPanel.add(lblsid);
 
 		txtStuId = new JTextField();
-		txtStuId.setFont(new Font("Tahoma", Font.PLAIN, 14));
-		txtStuId.setBounds(131, 60, 150, 20);
+		txtStuId.addFocusListener(TxtFieldFocusListener.getFocusListener(txtStuId));
+		txtStuId.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtStuId.setBounds(131, 55, 150, 25);
 		contentPanel.add(txtStuId);
 		txtStuId.setColumns(10);
 
 		JLabel lblbbooks = new JLabel("Enter Book ID:");
 		lblbbooks.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblbbooks.setBounds(21, 89, 100, 20);
+		lblbbooks.setBounds(21, 93, 100, 20);
 		contentPanel.add(lblbbooks);
 
-		txtSearch = new JTextField();
-		txtSearch.addKeyListener(new KeyAdapter() {
+		txtBookId = new JTextField();
+		txtBookId.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		txtBookId.addFocusListener(TxtFieldFocusListener.getFocusListener(txtBookId));
+		txtBookId.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.getKeyCode() != KeyEvent.VK_ENTER) {
 					return;
 				}
-
-				if (txtSearch.getText().length() != 8 || !txtSearch.getText().startsWith("BOK-")) {
-					JOptionPane.showMessageDialog(null, "Invalid Book ID!\nRequired Format: BOK-XXXX ");
-					txtSearch.requestFocus();
-					txtSearch.selectAll();
+				
+				if(tblBooks.getRowCount() >= 3) {
+					JOptionPane.showMessageDialog(null, "You have exceeded the borrow limit: 3 books");
+					txtBookId.setText("");
 					return;
 				}
 
-				if (containsBook(txtSearch.getText(), selectedBooks)) {
+				if (txtBookId.getText().length() != 8 || !txtBookId.getText().startsWith("BOK-")) {
+					JOptionPane.showMessageDialog(null, "Invalid Book ID!\nRequired Format: BOK-XXXX ");
+					txtBookId.requestFocus();
+					txtBookId.selectAll();
+					return;
+				}
+
+				if (containsBook(txtBookId.getText(), selectedBooks)) {
 					JOptionPane.showMessageDialog(null, "Book already selected!");
-					txtSearch.requestFocus();
-					txtSearch.selectAll();
+					txtBookId.requestFocus();
+					txtBookId.selectAll();
 					return;
 				}
 
 				BookController ctl = new BookController();
 				BookModel book = new BookModel();
 
-				book.setId(txtSearch.getText());
+				book.setId(txtBookId.getText());
 
 				book = ctl.getOneBookById(book);
 				if (book == null) {
 					JOptionPane.showMessageDialog(null, "Book does not exist!");
-					txtSearch.requestFocus();
-					txtSearch.selectAll();
+					txtBookId.requestFocus();
+					txtBookId.selectAll();
 					return;
 				} else if (book.getQty() <= 0) {
 					JOptionPane.showMessageDialog(null, "This book is unavailable");
-					txtSearch.requestFocus();
-					txtSearch.selectAll();
+					txtBookId.requestFocus();
+					txtBookId.selectAll();
 					return;
 				}
 
 				selectedBooks.add(book);
 				lblQty.setText(selectedBooks.size() + "");
 				updateTableRows();
-				txtSearch.setText("");
-				txtSearch.requestFocus();
+				txtBookId.setText("");
+				txtBookId.requestFocus();
 			}
 		});
-		txtSearch.setBounds(131, 91, 150, 20);
-		contentPanel.add(txtSearch);
-		txtSearch.setColumns(10);
+		txtBookId.setBounds(131, 91, 150, 25);
+		contentPanel.add(txtBookId);
+		txtBookId.setColumns(10);
 
 		JPanel panel = new JPanel();
 		panel.setBorder(new TitledBorder(null, "Selected Books:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(10, 120, 519, 397);
+		panel.setBounds(10, 120, 519, 332);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 21, 499, 318);
+		scrollPane.setBounds(10, 21, 499, 248);
 		panel.add(scrollPane);
 
 		tblBooks = new JTable() {
@@ -221,25 +231,25 @@ public class BorrowDialogView extends JDialog {
 		tblBooks.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		lblQty = new JLabel("0");
-		lblQty.setBounds(429, 370, 80, 20);
+		lblQty.setBounds(429, 300, 80, 20);
 		panel.add(lblQty);
 		lblQty.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblQty.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		JLabel lblqty = new JLabel("Total Books:");
-		lblqty.setBounds(319, 370, 100, 20);
+		lblqty.setBounds(319, 300, 100, 20);
 		panel.add(lblqty);
 		lblqty.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblqty.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		JLabel lbldue = new JLabel("Due Date:");
-		lbldue.setBounds(339, 350, 80, 20);
+		lbldue.setBounds(339, 280, 80, 20);
 		lbldue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbldue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lbldue);
 
 		JLabel lblDue = new JLabel(ChangeDate.toDateAfterDays(7));
-		lblDue.setBounds(439, 350, 70, 20);
+		lblDue.setBounds(439, 280, 70, 20);
 		lblDue.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDue.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		panel.add(lblDue);
@@ -315,7 +325,7 @@ public class BorrowDialogView extends JDialog {
 			}
 		});
 		MyBtn.changeMyBtnStyle(btnBorrow);
-		btnBorrow.setBounds(424, 528, 89, 27);
+		btnBorrow.setBounds(235, 463, 89, 27);
 		contentPanel.add(btnBorrow);
 
 		createTable();
@@ -362,7 +372,7 @@ public class BorrowDialogView extends JDialog {
 		txtStuId.setText("");
 		txtStuId.requestFocus();
 
-		txtSearch.setText("");
+		txtBookId.setText("");
 		selectedBooks.clear();
 		lblQty.setText(selectedBooks.size() + "");
 		dtm.setRowCount(0);
@@ -391,7 +401,7 @@ public class BorrowDialogView extends JDialog {
 			return false;
 		} else if (selectedBooks.size() <= 0) {
 			JOptionPane.showMessageDialog(null, "Please select books first");
-			txtSearch.requestFocus();
+			txtBookId.requestFocus();
 			return false;
 		}
 		return true;

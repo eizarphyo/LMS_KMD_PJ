@@ -4,10 +4,6 @@ package utilities;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JDialog;
-
-import view.DonationDialogView;
-
 public class MyDate {
 	
 //	public static void main(String[] args) {

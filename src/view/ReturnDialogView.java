@@ -33,6 +33,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
 
 import components.MyBtn;
+import components.TxtFieldFocusListener;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -81,6 +82,8 @@ public class ReturnDialogView extends JDialog {
 	private JLabel lblDmgFine;
 	private static ReturnDialogView dialog;
 	private List<BorrowDetailModel> borrowData = new ArrayList<>();
+	private JLabel lblDue;
+	private JLabel lblBorrowDate;
 
 	/**
 	 * Launch the application.
@@ -131,10 +134,12 @@ public class ReturnDialogView extends JDialog {
 
 		JLabel lblStuId = new JLabel("Student ID:");
 		lblStuId.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblStuId.setBounds(10, 50, 150, 25);
+		lblStuId.setBounds(10, 35, 150, 25);
 		contentPanel.add(lblStuId);
 
 		txtStuId = new JTextField();
+		txtStuId.addFocusListener(TxtFieldFocusListener.getFocusListener(txtStuId));
+		txtStuId.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtStuId.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -150,8 +155,8 @@ public class ReturnDialogView extends JDialog {
 					cboBorrowId.removeAllItems();
 					cboBorrowId.addItem("--Select--");
 					for (BorrowModel b : borrows) {
-						cboBorrowId.addItem(b.getBorrowId() + ", " + ChangeDate.toMyDateFormat(b.getBorrowAt()));
-
+//						cboBorrowId.addItem(b.getBorrowId() + ", " + ChangeDate.toMyDateFormat(b.getBorrowAt()));
+						cboBorrowId.addItem(b.getBorrowId());
 					}
 					cboBorrowId.setEnabled(true);
 					MyComboBox.changeMyCboStyle(cboBorrowId);
@@ -159,31 +164,32 @@ public class ReturnDialogView extends JDialog {
 
 			}
 		});
-		txtStuId.setBounds(170, 50, 150, 25);
+		txtStuId.setBounds(170, 35, 150, 25);
 		contentPanel.add(txtStuId);
 		txtStuId.setColumns(10);
 
 		JLabel lblbid = new JLabel("Select Borrow ID:");
 		lblbid.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblbid.setBounds(10, 85, 150, 25);
+		lblbid.setBounds(10, 70, 150, 25);
 		contentPanel.add(lblbid);
 
 		cboBorrowId = new JComboBox<String>();
+		cboBorrowId.setFont(new Font("Tahoma", Font.PLAIN, 13));
 
 		cboBorrowId.addItem("--SELECT--");
 		cboBorrowId.setEnabled(false);
-//		MyComboBox.changeMyCboStyle(cboBorrowId);
+		MyComboBox.changeMyCboStyle(cboBorrowId);
 		cboBorrowId.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				clearAll();
 
 				if (cboBorrowId.getSelectedIndex() > 0) {
-
-					String[] parts = cboBorrowId.getSelectedItem().toString().split(", ");
+					
+//					String[] parts = cboBorrowId.getSelectedItem().toString().split(", ");
+					String borrowId = cboBorrowId.getSelectedItem().toString();
 
 					BorrowDetailController ctl = new BorrowDetailController();
-
-					borrowData = ctl.getAllDetailsByBorrowId(parts[0]);
+					borrowData = ctl.getAllDetailsByBorrowId(borrowId);
 
 					Object[][] rows = new Object[borrowData.size()][6];
 					dtm.setRowCount(0);
@@ -191,6 +197,13 @@ public class ReturnDialogView extends JDialog {
 					checkPanel.removeAll();
 					checkPanel.revalidate();
 					checkPanel.repaint();
+					
+					Date borrowDate = BorrowController.getBorrowDate(borrowId);
+					lblBorrowDate.setText(ChangeDate.toMyDateFormat(borrowDate));
+					lblDue.setText(ChangeDate.toDateAfterDays(borrowDate.toString(), 7));
+					
+//					Date borrowedDate = BorrowController.getBorrowDate(parts[1]);
+//					lblDue.setText( ChangeDate.toDateAfterDays(parts[1], 7));
 					for (int i = 0; i < borrowData.size(); i++) {
 						BorrowDetailModel borrow = borrowData.get(i);
 						rows[i][0] = borrow.isReturned() ? true : false;
@@ -198,33 +211,33 @@ public class ReturnDialogView extends JDialog {
 						rows[i][2] = borrow.getBookId();
 						rows[i][3] = borrow.getBookTitle();
 						rows[i][4] = borrow.getAuthorName();
-						
+
 						boolean isDamaged = false;
-						if(borrow.isReturned()) {
+						if (borrow.isReturned()) {
 							isDamaged = ReturnDetailController.isDamaged(borrow.getBookId(), borrow.getBorrowId());
 						}
-						
+
 						rows[i][5] = isDamaged ? "Damaged" : "Good";
-							
+
 						dtm.addRow(rows[i]);
 					}
 
 				}
 			}
 		});
-		cboBorrowId.setBounds(170, 85, 150, 25);
+		cboBorrowId.setBounds(170, 70, 150, 25);
 		contentPanel.add(cboBorrowId);
 
 		JPanel panel = new JPanel();
 		panel.setBorder(
 				new TitledBorder(null, "Select Books to Return", TitledBorder.LEADING, TitledBorder.TOP, null, null));
-		panel.setBounds(10, 125, 519, 335);
+		panel.setBounds(10, 150, 519, 274);
 		contentPanel.add(panel);
 		panel.setLayout(null);
 
 		JScrollPane scrollPane = new JScrollPane();
 
-		scrollPane.setBounds(10, 20, 499, 195);
+		scrollPane.setBounds(10, 20, 499, 145);
 		panel.add(scrollPane);
 
 		// Column names
@@ -253,27 +266,6 @@ public class ReturnDialogView extends JDialog {
 					super.changeSelection(rowIndex, columnIndex, toggle, extend);
 				}
 			}
-
-//			@Override
-//			public Component prepareRenderer(TableCellRenderer renderer, int row, int column) {
-//				Component component = super.prepareRenderer(renderer, row, column);
-//
-//				// Check if row selection is disabled
-//				boolean isSelectionDisabled = (Boolean) getValueAt(row, 0);
-//
-//				// Change row style if selection is disabled
-//				if (isSelectionDisabled) {
-//					component.setBackground(Color.LIGHT_GRAY);
-//					component.setForeground(Color.RED); // Change text color if needed
-//				} else {
-//					// Reset to default style
-//					component.setBackground(getBackground());
-//					component.setForeground(getForeground());
-//				}
-//
-//				return component;
-//			}
-
 		};
 
 		// Set selection mode to multiple intervals
@@ -291,7 +283,8 @@ public class ReturnDialogView extends JDialog {
 
 						String[] parts = cboBorrowId.getSelectedItem().toString().split(", ");
 
-						String borrowId = parts[0];
+//						String borrowId = parts[0];
+						String borrowId = cboBorrowId.getSelectedItem().toString();
 						String bookId = tblReturn.getValueAt(i, 2).toString();
 
 						if (isSelected()) {
@@ -415,35 +408,35 @@ public class ReturnDialogView extends JDialog {
 		checkPanel.setBorder(
 				new TitledBorder(null, "Select Damaged Books:", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		checkPanel.setVisible(false);
-		checkPanel.setBounds(10, 226, 499, 98);
+		checkPanel.setBounds(10, 176, 499, 87);
 		panel.add(checkPanel);
 
 		JLabel lbld = new JLabel("Late Fine:");
 		lbld.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbld.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbld.setBounds(339, 471, 80, 20);
+		lbld.setBounds(339, 435, 80, 20);
 		contentPanel.add(lbld);
 
 		JLabel lbltf = new JLabel("Total Fine:");
 		lbltf.setHorizontalAlignment(SwingConstants.TRAILING);
 		lbltf.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lbltf.setBounds(339, 510, 80, 20);
+		lbltf.setBounds(339, 480, 80, 20);
 		contentPanel.add(lbltf);
 
 		lblTotalFine = new JLabel("0 Ks.");
 		lblTotalFine.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblTotalFine.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblTotalFine.setBounds(429, 510, 100, 20);
+		lblTotalFine.setBounds(429, 480, 100, 20);
 		contentPanel.add(lblTotalFine);
 
 		JLabel lblDate = new JLabel(ChangeDate.toMyDateFormat());
 		lblDate.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDate.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblDate.setBounds(449, 3, 80, 20);
+		lblDate.setBounds(449, 5, 80, 20);
 		contentPanel.add(lblDate);
 
 		lblLateFees = new JLabel("0 Ks.");
-		lblLateFees.setBounds(429, 471, 100, 16);
+		lblLateFees.setBounds(429, 435, 100, 16);
 		contentPanel.add(lblLateFees);
 		lblLateFees.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblLateFees.setFont(new Font("Tahoma", Font.PLAIN, 13));
@@ -451,13 +444,13 @@ public class ReturnDialogView extends JDialog {
 		JLabel lblDamage = new JLabel("Damage Fine:");
 		lblDamage.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		lblDamage.setHorizontalAlignment(SwingConstants.TRAILING);
-		lblDamage.setBounds(319, 490, 100, 20);
+		lblDamage.setBounds(319, 457, 100, 20);
 		contentPanel.add(lblDamage);
 
 		lblDmgFine = new JLabel("0 Ks.");
 		lblDmgFine.setHorizontalAlignment(SwingConstants.TRAILING);
 		lblDmgFine.setFont(new Font("Tahoma", Font.PLAIN, 13));
-		lblDmgFine.setBounds(429, 490, 100, 20);
+		lblDmgFine.setBounds(429, 457, 100, 20);
 		contentPanel.add(lblDmgFine);
 
 		JButton btnReturn = new JButton("Return");
@@ -476,7 +469,7 @@ public class ReturnDialogView extends JDialog {
 				ReturnController ctl = new ReturnController();
 				ReturnModel ret = new ReturnModel();
 
-				String borrowId = cboBorrowId.getSelectedItem().toString().split(", ")[0];
+				String borrowId = cboBorrowId.getSelectedItem().toString();
 
 				ret.setStuId(txtStuId.getText());
 				ret.setReturnId(dialog.getTitle());
@@ -522,10 +515,9 @@ public class ReturnDialogView extends JDialog {
 					}
 
 					book.setQty(book.getQty() + 1);
-					BookController bookCtl = new BookController();
 
 					// increase and update book's qty
-					if (bookCtl.updateQty(book) != 1) {
+					if (BookController.updateQty(book) != 1) {
 						JOptionPane.showMessageDialog(null, "Error updating book qty");
 						return;
 					}
@@ -571,135 +563,36 @@ public class ReturnDialogView extends JDialog {
 			}
 		});
 		MyBtn.changeMyBtnStyle(btnReturn);
-		btnReturn.setBounds(440, 532, 89, 27);
+		btnReturn.setBounds(231, 516, 89, 27);
 		contentPanel.add(btnReturn);
 
-		// -----------------
-//		{
-//			JPanel buttonPane = new JPanel();
-//			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-//			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-//
-//			JButton btnReturn = new JButton("Return");
-//
-//			btnReturn.addActionListener(new ActionListener() {
-//				public void actionPerformed(ActionEvent e) {
-//					if (txtStuId.getText().isBlank())
-//						return;
-//					else if (!isStuIdValid())
-//						return;
-//					else if (cboBorrowId.getSelectedIndex() <= 0) {
-//						JOptionPane.showMessageDialog(null, "Please select a borrow ID first");
-//						cboBorrowId.requestFocus();
-//						return;
-//					}
-//
-//					ReturnController ctl = new ReturnController();
-//					ReturnModel ret = new ReturnModel();
-//
-//					String borrowId = cboBorrowId.getSelectedItem().toString().split(", ")[0];
-//
-//					ret.setStuId(txtStuId.getText());
-//					ret.setReturnId(dialog.getTitle());
-//					ret.setBorrowId(borrowId);
-//					ret.setReturnedQty(books2bReturned.size());
-//					ret.setReturnedAt(Date.valueOf(LocalDate.now()));
-//					ret.setLateFine(Integer.parseInt(lblLateFees.getText().split(" ")[0]));
-//					ret.setTotalFine(Integer.parseInt(lblTotalFine.getText().split(" ")[0]));
-//
-//					if (ctl.insert(ret) != 1) {
-//						JOptionPane.showMessageDialog(null, "Cannot Return");
-//						return;
-//					}
-//					// finished creating return
-//
-//					ReturnDetailController dctl = new ReturnDetailController();
-//
-//					for (String bookId : books2bReturned) {
-//						ReturnDetailModel d = new ReturnDetailModel();
-//
-//						d.setBookId(bookId);
-//						System.out.println(bookId + " " + d.getBookId());
-//						d.setReturnId(dialog.getTitle());
-//
-//						String title = BookController.getTitleById(bookId);
-//
-//						int r = getRowIndexByBookTitle(tblReturn, 3, title);
-//						String dmg = tblReturn.getValueAt(r, 5).toString();
-//
-//						d.setDamaged(dmg.equals("Damaged"));
-//
-//						BookModel book = BookController.getOneBookByTitle(title);
-//						if (dmg.equals("Damaged")) {
-//
-//							int price = book.getPrice();
-//							int fine = (int) Math.round(price * 0.1);
-//
-//							d.setDamageFees(fine);
-//						}
-//
-//						if (dctl.insert(d) != 1) {
-//							JOptionPane.showMessageDialog(null, "Error creating return details");
-//							return;
-//						}
-//
-//						book.setQty(book.getQty() + 1);
-//						BookController bookCtl = new BookController();
-//
-//						// increase and update book's qty
-//						if (bookCtl.updateQty(book) != 1) {
-//							JOptionPane.showMessageDialog(null, "Error updating book qty");
-//							return;
-//						}
-//
-//						// update borrow_details' is_return field to true
-//						BorrowDetailModel borrowDetail = new BorrowDetailModel();
-//
-//						borrowDetail.setBorrowId(borrowId);
-//						borrowDetail.setBookId(bookId);
-//
-//						if (BorrowDetailController.updateIsReturnedByBorrowIdAndBookId(borrowDetail) != 1) {
-//							JOptionPane.showMessageDialog(null, "Error updating is_return field of Borrow Details");
-//							return;
-//						}
-//
-//					}
-//					// finished creating return details
-//
-//					// NEED TO UPDATE RETURN QTY --------------
-//
-//					BorrowModel borrow = BorrowController.getOneBorrowById(borrowId);
-//
-//					int returnedQty = borrow.getReturnedQty();
-//
-//					borrow.setReturnedQty(returnedQty + books2bReturned.size());
-//					borrow.setQtyToBeReturned(borrow.getBorrowQty() - borrow.getReturnedQty());
-//
-//					borrow.setAllReturned(borrow.getQtyToBeReturned() == 0);
-//
-//					if (BorrowController.updateReturnQty(borrow) != 1) {
-//						JOptionPane.showMessageDialog(null, "Error updating returned_qty in Borrow");
-//						return;
-//					}
-//
-//					JOptionPane.showMessageDialog(null, "Success!");
-//					txtStuId.setText("");
-//					cboBorrowId.setSelectedIndex(0);
-//					cboBorrowId.setEnabled(false);
-//
-//					clearAll();
-//					dialog.setTitle(AutoID.getPK("return_id", "lib.return", "RTN-"));
-//				}
-//			});
-//			buttonPane.add(btnReturn);
-//
-//		}
-		// ----
+		JLabel lbldue = new JLabel("Due Date:");
+		lbldue.setHorizontalAlignment(SwingConstants.TRAILING);
+		lbldue.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lbldue.setBounds(339, 120, 80, 25);
+		contentPanel.add(lbldue);
+
+		lblDue = new JLabel("----");
+		lblDue.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblDue.setBounds(429, 120, 100, 25);
+		contentPanel.add(lblDue);
+		
+		JLabel lblBorrowdate = new JLabel("Borrowed Date:");
+		lblBorrowdate.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblBorrowdate.setBounds(10, 120, 100, 25);
+		contentPanel.add(lblBorrowdate);
+		
+		lblBorrowDate = new JLabel("----");
+		lblBorrowDate.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblBorrowDate.setBounds(114, 120, 100, 25);
+		contentPanel.add(lblBorrowDate);
 
 	}
 
 	void clearAll() {
 		books2bReturned.clear();
+		lblDue.setText("----");
+		lblBorrowDate.setText("----");
 		lblLateFees.setText("0 Ks.");
 		lblDmgFine.setText("0 Ks.");
 		lblTotalFine.setText("0 Ks.");

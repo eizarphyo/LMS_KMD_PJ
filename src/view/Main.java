@@ -27,25 +27,45 @@ import javax.swing.border.EmptyBorder;
 import components.MyBtn;
 import components.MyImageLabel;
 import controller.BookController;
+import controller.GenreController;
 import model.BookModel;
+import utilities.MyComboBox;
 
 import javax.swing.JTextField;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.JComboBox;
 
 public class Main extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JLabel lbl;
-	private JTextField txtSearch;
 	private List<BookModel> books = new ArrayList<>();
+	private JComboBox<String> cboFilter;
+	private JPanel panelBooks;
+
+	private int row = 1, col=1;
 
 	/**
 	 * Launch the application.
 	 */
 	public static void main(String[] args) {
+		EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				try {
+					Main frame = new Main();
+					frame.setVisible(true);
+					frame.setExtendedState(JFrame.MAXIMIZED_BOTH); // set the frame to be maximized
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+		});
+	}
+
+	public static void showFrame() {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
@@ -71,7 +91,7 @@ public class Main extends JFrame {
 
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setContentPane(contentPane);
-		
+
 		BookController ctl = new BookController();
 		books = ctl.getAllBooks();
 
@@ -85,10 +105,10 @@ public class Main extends JFrame {
 
 		ImageIcon icon = new ImageIcon(img);
 
-		lbl = new JLabel("Fantastic Library");
-		
+		lbl = new JLabel("Shiba Shelves");
+
 		// Set padding by adjusting the insets of the label's border
-        lbl.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0)); // top, left, bottom, right
+		lbl.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0)); // top, left, bottom, right
 		lbl.setIconTextGap(20); // Adjust the gap value between img and txt
 		lbl.setBounds(0, 0, 1300, 50);
 		lbl.setIcon(icon);
@@ -119,7 +139,7 @@ public class Main extends JFrame {
 //		searchPanel.add(txtSearch, BorderLayout.CENTER);
 
 		JPanel panel = new JPanel();
-		panel.setBounds(0, 100, 1280, 580);
+		panel.setBounds(0, 107, 1280, 580);
 		panel.setLayout(null);
 		contentPanel.add(panel);
 
@@ -127,10 +147,10 @@ public class Main extends JFrame {
 		scrollPane.setBounds(0, 0, 1280, 580);
 		panel.add(scrollPane);
 
-		JPanel panelBooks = new JPanel();
+		panelBooks = new JPanel();
 		scrollPane.setViewportView(panelBooks);
-		System.out.println(books.size());
-		panelBooks.setLayout(new GridLayout(books.size() / 6+1, 6, 10, 20));
+		row = books.size() / 6 + 1; col = 6;
+		panelBooks.setLayout(new GridLayout(row, col, 10, 20));
 
 		JLabel title = new JLabel("Available Books");
 		title.setFont(new Font("Tahoma", Font.BOLD, 15));
@@ -141,7 +161,7 @@ public class Main extends JFrame {
 		btnBorrow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				BorrowDialogView.showDialog();
-				
+
 			}
 		});
 		MyBtn.changeMyBtnStyle(btnBorrow);
@@ -157,75 +177,75 @@ public class Main extends JFrame {
 		MyBtn.changeMyBtnStyle(btnReturn);
 		btnReturn.setBounds(1173, 66, 75, 27);
 		contentPanel.add(btnReturn);
+		
+		cboFilter = new JComboBox();
+		MyComboBox.changeMyCboStyle(cboFilter);
+		cboFilter.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if(cboFilter.getSelectedIndex() > 0) {
+					String genre = cboFilter.getSelectedItem().toString();
+					
+					String genreId = GenreController.getIdByName(genre);
+					
+					books = BookController.searchBooksByGenreId(genreId);
+					System.out.println(books);
+					panelBooks.removeAll();
+					renderBooks();
+				}
+			}
+		});
+		cboFilter.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		cboFilter.setBounds(600, 67, 200, 25);
+		contentPanel.add(cboFilter);
 
-		
-		
-		for(BookModel book: books) {
-			ImageIcon bookCover = new ImageIcon(convertBlobToImage(book.getImage()).getScaledInstance(150, 200, Image.SCALE_SMOOTH));
-			
+		for (BookModel book : books) {
+			ImageIcon bookCover = new ImageIcon(
+					convertBlobToImage(book.getImage()).getScaledInstance(150, 200, Image.SCALE_SMOOTH));
+
 			JCheckBox checkBox = new JCheckBox();
 			checkBox.setOpaque(false); // Set opaque to false
 			checkBox.setBorderPainted(false); // Remove border
-			
+
 			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, checkBox);
 //			label.setBorder(BorderFactory.createLineBorder(Color.orange));
 			panelBooks.add(label);
 		}
-		
-		//---------
-//		JLabel[] labels = new JLabel[20];
-//		MyImageLabel[] labels = new MyImageLabel[20];
-//
-//		for (int i = 0; i < labels.length; i++) {
-//
-////			java.net.URL imgURL = getClass().getResource("../images/daring_greatly.png");
-////			ImageIcon img = new ImageIcon(imgURL);
-//
-//			ImageIcon img1 = new ImageIcon(
-//					new ImageIcon("C:\\Users\\Lenovo\\OneDrive\\Pictures\\Saved Pictures\\daring_greatly.png")
-//							.getImage().getScaledInstance(130, 180, Image.SCALE_SMOOTH));
-//
-//			ImageIcon img2 = new ImageIcon(
-//					new ImageIcon("C:\\Users\\Lenovo\\OneDrive\\Pictures\\Saved Pictures\\select.png").getImage()
-//							.getScaledInstance(30, 30, Image.SCALE_SMOOTH));
-//
-//			JCheckBox checkBox = new JCheckBox();
-//			checkBox.setOpaque(false); // Set opaque to false
-//			checkBox.setBorderPainted(false); // Remove border
-//
-//			labels[i] = new MyImageLabel("Daring Greatly", img1, img2, checkBox);
-//			final int I = i;
-//			labels[i].addMouseListener(new MouseAdapter() {
-//				@Override
-//				public void mouseClicked(MouseEvent e) {
-//					System.out.println("Clicked " + I);
-//					if (labels[I].getBorder() != null) {
-//						labels[I].setBorder(null);
-//						checkBox.setSelected(false);
-//
-//						return;
-//					}
-//					;
-//					labels[I].setBorder(BorderFactory.createLineBorder(Color.orange));
-//					checkBox.setSelected(true);
-//				}
-//			});
-//			panelBooks.add(labels[i]);
-//
-//		}
+
+		fillCombo();
+	}
+
+	private static Image convertBlobToImage(byte[] blobData) {
+		// Convert the blob data to an Image
+		Image image = null;
+		if (blobData != null && blobData.length > 0) {
+			try {
+				InputStream inputStream = new ByteArrayInputStream(blobData);
+				image = ImageIO.read(inputStream);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		return image;
 	}
 	
-	private static Image convertBlobToImage(byte[] blobData) {
-        // Convert the blob data to an Image
-        Image image = null;
-        if (blobData != null && blobData.length > 0) {
-            try {
-                InputStream inputStream = new ByteArrayInputStream(blobData);
-                image = ImageIO.read(inputStream);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return image;
-    }
+	void renderBooks() {
+		
+		for (BookModel book : books) {
+			
+			ImageIcon bookCover = new ImageIcon(
+					convertBlobToImage(book.getImage()).getScaledInstance(150, 200, Image.SCALE_SMOOTH));
+
+			JCheckBox checkBox = new JCheckBox();
+			checkBox.setOpaque(false); // Set opaque to false
+			checkBox.setBorderPainted(false); // Remove border
+
+			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, checkBox);
+//			label.setBorder(BorderFactory.createLineBorder(Color.orange));
+			panelBooks.add(label);
+		}
+	}
+	
+	void fillCombo() {
+		MyComboBox.fillComboItems("genre", "genre_name", cboFilter);
+	}
 }

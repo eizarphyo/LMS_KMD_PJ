@@ -180,4 +180,28 @@ public class AuthorController {
 		}
 		return null;
 	}
+	
+	public static List<AuthorModel> searchByName(String name) {
+		String query = "SELECT * FROM lib.author WHERE author_name LIKE ? ORDER BY author_name ASC";
+		List<AuthorModel> authors = new ArrayList<>();
+
+		PreparedStatement ps;
+		try {
+			ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, name + "%");
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				AuthorModel author = new AuthorModel();
+
+				author.setId(rs.getString("author_id"));
+				author.setName(rs.getString("author_name"));
+
+				authors.add(author);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return authors;
+	}
 }

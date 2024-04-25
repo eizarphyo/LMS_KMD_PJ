@@ -35,6 +35,8 @@ public class MyComboBox {
 			query = query.concat(" ORDER BY author_name ASC");
 		} else if (table.equals("book")) {
 			query = query.concat(" ORDER BY title ASC");
+		} else if (table.equals("donator")) {
+			query = query.concat(" ORDER BY donator_name ASC");
 		}
 
 		PreparedStatement ps;
