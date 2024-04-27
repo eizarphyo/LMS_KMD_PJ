@@ -83,24 +83,25 @@ public class AdminLogin extends JDialog {
 
 		JLabel lblName = new JLabel("Username:");
 		lblName.setForeground(Color.BLACK);
-		lblName.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblName.setBounds(53, 63, 75, 20);
+		lblName.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblName.setBounds(53, 63, 75, 25);
 		contentPanel.add(lblName);
 
 		txtName = new JTextField();
+		txtName.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtName.addFocusListener(TxtFieldFocusListener.getFocusListener(txtName));
-		txtName.setBounds(149, 64, 150, 20);
+		txtName.setBounds(149, 64, 150, 25);
 		contentPanel.add(txtName);
 		txtName.setColumns(10);
 
 		JLabel lblPass = new JLabel("Password:");
-		lblPass.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblPass.setBounds(53, 106, 75, 20);
+		lblPass.setFont(new Font("Tahoma", Font.PLAIN, 13));
+		lblPass.setBounds(53, 106, 75, 25);
 		contentPanel.add(lblPass);
 		
 
 		btnLogin = new JButton("Login");
-		btnLogin.setBounds(134, 157, 75, 25);
+		btnLogin.setBounds(134, 157, 75, 27);
 		
 		MyBtn.changeMyBtnStyle(btnLogin);
 		btnLogin.addActionListener(new ActionListener() {
@@ -113,6 +114,7 @@ public class AdminLogin extends JDialog {
 		contentPanel.add(btnLogin);
 
 		txtPass = new JPasswordField();
+		txtPass.setFont(new Font("Tahoma", Font.PLAIN, 13));
 		txtPass.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(KeyEvent e) {
@@ -122,7 +124,7 @@ public class AdminLogin extends JDialog {
 			}
 		});
 		txtPass.addFocusListener(TxtFieldFocusListener.getFocusListener(txtPass));
-		txtPass.setBounds(149, 107, 150, 20);
+		txtPass.setBounds(149, 107, 150, 25);
 		contentPanel.add(txtPass);
 	}
 	

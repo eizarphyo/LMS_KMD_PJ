@@ -9,6 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -69,13 +70,13 @@ public class DonationView extends JDialog {
 	private static JLabel lblDate;
 	private JLabel lblBook;
 	private JLabel lblQty;
-	private JTable tblBooks;
+	private static JTable tblBooks;
 	private static DefaultTableModel dtm = new DefaultTableModel();
 	private JLabel lblAuthor;
 	private static Vector<BookModel> selectedBooks = new Vector<>();
 	private JLabel lblId;
 	private JLabel lblBookId;
-	private JButton btnAdd;
+	private static JButton btnAdd;
 	private JButton btnUpdate;
 	private JButton btnDelete;
 
@@ -100,30 +101,32 @@ public class DonationView extends JDialog {
 			dialog.setTitle(AutoID.getPK("donation_id", "donation", "DON-"));
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
+			dtm.setRowCount(0);
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public static void showDialog(String id) {
 		try {
 			update = true;
 			dialog = new DonationView();
+
 			dialog.setTitle(id);
 			dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 
 			DonationController ctl = new DonationController();
 			DonationModel don = new DonationModel();
 			don.setDonationId(id);
-			
+
 			don = ctl.getOneDonationById(don);
 			cboDonatorName.setSelectedItem(don.getDonatorName());
-			
+
 			List<DonationDetailModel> details = DonationDetailController.getAllDonationsById(id);
 			lblDate.setText(details.get(0).getDate());
-			
-			for(DonationDetailModel d: details) {
+
+			for (DonationDetailModel d : details) {
 				BookModel book = new BookModel();
 				book.setId(d.getBookId());
 				book.setTitle(d.getTitle());
@@ -131,12 +134,18 @@ public class DonationView extends JDialog {
 				book.setQty(d.getQty());
 				selectedBooks.add(book);
 			}
-			
+
 			updateTableRows();
-			
+
 			cboTitle.setSelectedIndex(0);
 			txtQty.setText("");
 
+			cboDonatorName.setEnabled(false);
+			txtQty.setEnabled(false);
+			cboTitle.setEnabled(false);
+			btnAdd.setEnabled(false);
+			btnAdd.setBackground(Color.LIGHT_GRAY);
+			
 			dialog.setVisible(true);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -255,8 +264,12 @@ public class DonationView extends JDialog {
 		tblBooks.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				int r = tblBooks.getSelectedRow();
+				if(update) {
+					return;
+				}
 				
+				int r = tblBooks.getSelectedRow();
+
 				cboTitle.setEnabled(false);
 				enableAddBtn(false);
 
@@ -264,7 +277,7 @@ public class DonationView extends JDialog {
 				cboTitle.setSelectedItem(tblBooks.getValueAt(r, 2).toString());
 				lblAuthor.setText(tblBooks.getValueAt(r, 3).toString());
 				txtQty.setText(tblBooks.getValueAt(r, 4).toString());
-				
+
 			}
 		});
 		tblBooks.setRowHeight(27);
@@ -313,9 +326,9 @@ public class DonationView extends JDialog {
 					return;
 				}
 
-				for(BookModel book: selectedBooks) {
-					if(book.getTitle().equals(title)) {
-						book.setQty(Integer.parseInt(txtQty.getText()));						
+				for (BookModel book : selectedBooks) {
+					if (book.getTitle().equals(title)) {
+						book.setQty(Integer.parseInt(txtQty.getText()));
 					}
 				}
 				updateTableRows();
@@ -334,14 +347,14 @@ public class DonationView extends JDialog {
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String title = cboTitle.getSelectedItem().toString();
-				
-				for(BookModel book: selectedBooks) {
-					if(book.getTitle().equals(title)) {
+
+				for (BookModel book : selectedBooks) {
+					if (book.getTitle().equals(title)) {
 						selectedBooks.remove(book);
 						break;
 					}
 				}
-				
+
 				updateTableRows();
 				clearBookInfo();
 				cboTitle.setEnabled(true);
@@ -374,59 +387,60 @@ public class DonationView extends JDialog {
 		lblBookId.setBounds(120, 193, 60, 25);
 		contentPanel.add(lblBookId);
 
-		btnSave = new JButton(update ? "Update" : "Save");
+		btnSave = new JButton(update ? "Close" :"Save");
 		btnSave.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (cboDonatorName.getSelectedIndex()<=0 || selectedBooks.size() <= 0) {
-					JOptionPane.showMessageDialog(null, "Please select donator and donated books");
+				if(update) {
+					dispose();
 					return;
 				}
 				
-				
+				if (cboDonatorName.getSelectedIndex() <= 0 || selectedBooks.size() <= 0) {
+					JOptionPane.showMessageDialog(null, "Please select donator and donated books");
+					return;
+				}
+
 				DonationController dctl = new DonationController();
 				DonationModel donation = new DonationModel();
 				donation.setDonationId(dialog.getTitle());
 				donation.setDate(lblDate.getText());
 				donation.setDonatorId(lblDonatorId.getText());
-				
+
 				int totalQty = 0;
-				for(BookModel book: selectedBooks) {
+				for (BookModel book : selectedBooks) {
 					totalQty += book.getQty();
 				}
 				donation.setTotalQty(totalQty);
-				
-				int ok = update ? dctl.update(donation) : dctl.insert(donation);
-				if(ok < 1) {
-					JOptionPane.showMessageDialog(null, update ? "Error updating donation" : "Error creating donation");
+
+				int ok = dctl.insert(donation);
+				if (ok != 1) {
+					JOptionPane.showMessageDialog(null, "Error creating donation");
 					return;
 				}
-				
-				for(BookModel book: selectedBooks) {
+
+				// if not; user did not add or deleted books while updating
+				for (BookModel book : selectedBooks) {
 					DonationDetailController ctl = new DonationDetailController();
 					DonationDetailModel detail = new DonationDetailModel();
-					
+
 					detail.setDonationId(donation.getDonationId());
 					detail.setBookId(book.getId());
 					detail.setQty(book.getQty());
-					
-					ok = update ? ctl.update(detail) : ctl.insert(detail);
-					
-					if(ok != 1) {
-						JOptionPane.showMessageDialog(null, "Error "+ (update ? "updating" :"creating") +" donation details");
+
+					if (ctl.insert(detail) != 1) {
+						JOptionPane.showMessageDialog(null, "Error creating donation details");
 						return;
 					}
-					
+
 					// donated qty + the qty in the library
 					int bookQty = book.getQty() + BookController.getQty(book.getId());
 					book.setQty(bookQty);
-					
 					BookController.updateQty(book);
-				
-
 				}
 				JOptionPane.showMessageDialog(null, "Success!");
 				MyTblFunctions.updateDonationsTable();
 				clearAll();
+				
 			}
 		});
 		MyBtn.changeMyBtnStyle(btnSave);
@@ -472,6 +486,11 @@ public class DonationView extends JDialog {
 			txtQty.requestFocus();
 			txtQty.selectAll();
 			return false;
+		} else if (Integer.parseInt(txtQty.getText()) == 0) {
+			JOptionPane.showMessageDialog(null, "Quantity must be greater than zero");
+			txtQty.requestFocus();
+			txtQty.selectAll();
+			return false;
 		}
 		return true;
 	}
@@ -488,7 +507,6 @@ public class DonationView extends JDialog {
 			row[2] = book.getTitle();
 			row[3] = book.getAuthorName();
 			row[4] = book.getQty() + "";
-			
 
 			dtm.addRow(row);
 			i++;
@@ -522,18 +540,12 @@ public class DonationView extends JDialog {
 		selectedBooks.clear();
 		dtm.setRowCount(0);
 	}
-	
-	void changeToBottomBorder(JTextField txt) {
-		BorderFactory.createCompoundBorder(
-	            txt.getBorder(),
-	            BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-	}
-	
+
 	void enableAddBtn(boolean enable) {
 		btnAdd.setEnabled(enable);
 		btnUpdate.setEnabled(!enable);
 		btnDelete.setEnabled(!enable);
-		
+
 		MyBtn.changeMyBtnStyle(btnAdd);
 		MyBtn.changeMyBtnStyle(btnUpdate);
 		MyBtn.changeMyBtnStyle(btnDelete);
@@ -542,5 +554,167 @@ public class DonationView extends JDialog {
 	private void fillComboBoxes() {
 		MyComboBox.fillComboItems("donator", "donator_name", cboDonatorName);
 		MyComboBox.fillComboItems("book", "title", cboTitle);
+	}
+
+	void changeToBottomBorder(JTextField txt) {
+		BorderFactory.createCompoundBorder(txt.getBorder(), BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
+	}
+
+	boolean hasSameBooks(List<BookModel> books, List<DonationDetailModel> details) {
+		for (int i = 0; i < books.size(); i++) {
+			String bookId = books.get(i).getId();
+
+			for (DonationDetailModel d : details) {
+				if (!d.getBookId().equals(bookId)) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	boolean bookIsInDb(String bookId, List<DonationDetailModel> details) {
+		for (DonationDetailModel d : details) {
+			if (d.getBookId().equals(bookId)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	List<String> getLeftBooks(List<BookModel> books, List<DonationDetailModel> details) {
+		List<String> leftBooks = new ArrayList<>();
+		for (DonationDetailModel d : details) {
+			String bookId = d.getBookId();
+
+			boolean found = false;
+			for (BookModel book : books) {
+				if (book.getId().equals(bookId)) {
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				leftBooks.add(bookId);
+			}
+		}
+		return leftBooks;
+	}
+
+	void reduceBookQty(String bookId, String donationId) {
+		DonationDetailController ctl = new DonationDetailController();
+		DonationDetailModel data = new DonationDetailModel();
+		data.setDonationId(donationId);
+		data.setBookId(bookId);
+
+		List<DonationDetailModel> details = ctl.getAllDonationsByDonationIdAndBookId(data);
+
+		for (DonationDetailModel d : details) {
+			int qtyToBeRemoved = d.getQty();
+
+			int bookQty = BookController.getQty(d.getBookId());
+			int finalQty = bookQty - qtyToBeRemoved;
+
+			BookModel book = new BookModel();
+			book.setId(d.getBookId());
+			book.setQty(finalQty);
+			BookController.updateQty(book);
+
+		}
+	}
+
+	void addBookAndUpdateDetails(List<DonationDetailModel> details) {
+		for (int i = 0; i < selectedBooks.size(); i++) {
+			BookModel book = selectedBooks.get(i);
+
+			DonationDetailController ctl = new DonationDetailController();
+			DonationDetailModel data = new DonationDetailModel();
+
+			data.setDonationId(dialog.getTitle());
+			data.setBookId(book.getId());
+			data.setQty(book.getQty());
+
+			int previousDonatedQty = ctl.getDonatedQtyByBookIdAndDonationId(data);
+			int updatedQty = data.getQty();
+//			System.out.println("after added");
+//			System.out.println("prev " + previousDonatedQty + " updated " + updatedQty);
+//			
+			int finalQty = book.getQty();
+			// လှူတဲ့ qty ကို လျှော့လိုက်ရင် book qty ကိုလည်း လျှော့
+			if (previousDonatedQty > updatedQty) {
+				int qtyToBeRemoved = previousDonatedQty - updatedQty;
+				finalQty = BookController.getQty(book.getId()) - qtyToBeRemoved;
+//				System.out.println(finalQty + " after removed " + qtyToBeRemoved);
+			} else { // book qty ကို သွား
+				int qtyToBeAdded = updatedQty - previousDonatedQty;
+				finalQty = BookController.getQty(book.getId()) + qtyToBeAdded;
+//				System.out.println("Before: " + BookController.getQty(book.getId()) + " " + finalQty + " after added "
+//						+ qtyToBeAdded);
+			}
+
+			int ok = update ? ctl.update(data) : ctl.insert(data);
+			if (ok != 1) {
+				JOptionPane.showMessageDialog(null,
+						"Error " + (update ? "updating" : "creating") + " donation details");
+				return;
+			}
+
+//			int ok;
+			if (bookIsInDb(book.getId(), details)) {
+				ok = ctl.update(data);
+			} else {
+				ok = ctl.insert(data);
+			}
+
+			if (ok != 1) {
+				JOptionPane.showMessageDialog(null, "Error updating donation details");
+				return;
+			}
+
+			book.setQty(finalQty);
+			ok = BookController.updateQty(book);
+
+			// donated qty + the qty in the library
+//			int bookQty = book.getQty() + BookController.getQty(book.getId());
+//			book.setQty(bookQty);
+//			BookController.updateQty(book);
+
+			if (ok != 1) {
+				JOptionPane.showMessageDialog(null, "Error updating book qty");
+				return;
+			}
+
+		}
+
+		JOptionPane.showMessageDialog(null, "Success!");
+		MyTblFunctions.updateDonationsTable();
+		clearAll();
+		dispose();
+
+	}
+
+	int deleteBooksFromDetails(String bookId, String donationId) {
+		DonationDetailController ctl = new DonationDetailController();
+		DonationDetailModel data = new DonationDetailModel();
+
+		data.setBookId(bookId);
+		data.setDonationId(donationId);
+
+		int qty2BeDeleted = ctl.getDonatedQtyByBookIdAndDonationId(data);
+
+		if (ctl.deleteByBookIdAndDonationId(data) != 1) {
+			JOptionPane.showMessageDialog(null, "Error Deleting donation details");
+			return 0;
+		}
+
+		// the qty in the library - donated qty
+
+		int bookQty = BookController.getQty(bookId) - qty2BeDeleted;
+		BookModel book = new BookModel();
+		book.setQty(bookQty);
+
+		BookController.updateQty(book);
+		return 1;
 	}
 }

@@ -64,26 +64,31 @@ public class BtnMouseListener extends MouseAdapter {
 					btn.setOpaque(true);
 					return;
 				}
+
+				// mouse exit -> not clicked ? transparent : orange bg and make other btn
+				// transparent
+//				for (JButton b : AdminMain.getBtns()) {
+//					
+//				}
+
+				
+
 				btn.setOpaque(false);
 			}
 
 			@Override
 			public void mousePressed(MouseEvent e) {
 				for (JButton b : AdminMain.getBtns()) {
-					if (!b.equals(btn)) {
-						b.setOpaque(false); // false -> transparent
+					
+					b.setOpaque(false); // false -> transparent
 
-					} else {
+					if(b.equals(btn)) {
 						b.setOpaque(true);
 						b.setBackground(LibColors.PRIMARY_ACCENT);
-
 					}
-//					System.out.println("Tran> " + b.isOpaque());
+					
+					b.repaint();
 				}
-
-//				btn.setOpaque(true);
-//				btn.setBackground(LibColors.PRIMARY_ACCENT);
-				
 			}
 
 			public void mouseReleased(MouseEvent e) {

@@ -188,7 +188,6 @@ public class Main extends JFrame {
 					String genreId = GenreController.getIdByName(genre);
 					
 					books = BookController.searchBooksByGenreId(genreId);
-					System.out.println(books);
 					panelBooks.removeAll();
 					renderBooks();
 				}

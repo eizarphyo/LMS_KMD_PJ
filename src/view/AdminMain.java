@@ -21,6 +21,7 @@ import controller.AuthorController;
 import controller.BookController;
 import controller.BorrowController;
 import controller.DonationController;
+import controller.DonationDetailController;
 import controller.DonatorController;
 import controller.GenreController;
 import controller.PublisherController;
@@ -29,6 +30,7 @@ import javafx.scene.control.DatePicker;
 import model.AuthorModel;
 import model.BookModel;
 import model.BorrowModel;
+import model.DonationDetailModel;
 import model.DonationModel;
 import model.DonatorModel;
 import model.GenreModel;
@@ -51,6 +53,8 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.JScrollPane;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import java.awt.Dimension;
 import java.awt.Color;
@@ -62,6 +66,7 @@ import org.jdatepicker.impl.JDatePanelImpl;
 import org.jdatepicker.DateModel;
 import org.jdatepicker.JDatePicker;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -88,9 +93,11 @@ public class AdminMain extends JFrame {
 	private static JButton btnGenres;
 	private static JButton btnDonators;
 	private static JButton btnDonation;
-	private JLabel lbl;
+	private static JButton btnBorrow;
+	private static JButton btnReturn;
 	private JButton btnUpdate;
 	private JButton btnDelete;
+	private JLabel lbl;
 
 	private String selectedId;
 	private JLabel lblInfo;
@@ -158,7 +165,7 @@ public class AdminMain extends JFrame {
 		contentPane.add(lbl);
 
 		Box verticalBox = Box.createVerticalBox();
-		verticalBox.setBounds(0, 70, 126, 353);
+		verticalBox.setBounds(0, 70, 126, 720);
 //		verticalBox.setBorder(BorderFactory.createLineBorder(getForeground()));
 		contentPane.add(verticalBox);
 
@@ -194,7 +201,6 @@ public class AdminMain extends JFrame {
 
 		// AUTHORS BTN
 		btnAuthors = new JButton("Authors");
-
 		btnAuthors.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 
 		MyBtn.changeMySideNaveStyle(btnAuthors);
@@ -202,7 +208,6 @@ public class AdminMain extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(true);
 
-				enableBtns(false);
 				lblTitle.setText("Author List");
 
 				String[] cols = { "No.", "ID", "Name" };
@@ -211,6 +216,7 @@ public class AdminMain extends JFrame {
 
 				obj = btnAuthors;
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 
@@ -224,7 +230,6 @@ public class AdminMain extends JFrame {
 		btnGenres.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(true);
-				enableBtns(false);
 				lblTitle.setText("Genre List");
 
 				String[] cols = { "No.", "ID", "Name" };
@@ -233,7 +238,7 @@ public class AdminMain extends JFrame {
 
 				obj = btnGenres;
 				updateTable(obj.getText()); // update table data - for row
-
+				enableBtns(false);
 			}
 		});
 		verticalBox.add(btnGenres);
@@ -244,7 +249,6 @@ public class AdminMain extends JFrame {
 		btnPublishers.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(true);
-				enableBtns(false);
 				lblTitle.setText("Publisher List");
 
 				String[] cols = { "No.", "ID", "Name" };
@@ -253,6 +257,7 @@ public class AdminMain extends JFrame {
 
 				obj = btnPublishers;
 				updateTable(obj.getText());
+				enableBtns(false);
 
 			}
 		});
@@ -266,7 +271,6 @@ public class AdminMain extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(true);
 				lblTitle.setText("Donator List");
-				enableBtns(false);
 
 				String[] cols = { "No.", "ID", "Name", "Email", "Phone", "Address" };
 				int[] w = { 40, 82, 220, 216, 136, 403 };
@@ -274,6 +278,7 @@ public class AdminMain extends JFrame {
 
 				obj = btnDonators;
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 		btnDonators.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -286,7 +291,6 @@ public class AdminMain extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(true);
 				lblTitle.setText("Dontaion List");
-				enableBtns(false);
 
 				String[] cols = { "No.", "ID", "Dontaor ID", "Donator Name", "Date", "Book Qty" };
 				int[] w = { 47, 141, 158, 430, 197, 134 };
@@ -294,20 +298,20 @@ public class AdminMain extends JFrame {
 
 				obj = btnDonation;
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 		btnDonation.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 		verticalBox.add(btnDonation);
 
 		// BORROW BTN
-		JButton btnBorrow = new JButton("Borrows");
+		btnBorrow = new JButton("Borrows");
 		MyBtn.changeMySideNaveStyle(btnBorrow);
 		btnBorrow.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(false);
 
 				lblTitle.setText("Borrow List");
-				enableBtns(false);
 
 				String[] cols = { "No.", "ID", "Student ID", "Student Name", "Date", "Total Borrowed Qty",
 						"Total Returned Qty" };
@@ -316,20 +320,20 @@ public class AdminMain extends JFrame {
 
 				obj = btnBorrow;
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 		btnBorrow.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
 		verticalBox.add(btnBorrow);
 
 		// RETURN BTN
-		JButton btnReturn = new JButton("Returns");
+		btnReturn = new JButton("Returns");
 		MyBtn.changeMySideNaveStyle(btnReturn);
 		btnReturn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				showBtns(false);
 
 				lblTitle.setText("Borrow List");
-				enableBtns(false);
 
 				String[] cols = { "No.", "Return ID", "Borrow ID", "Student ID", "Student Name", "Date",
 						"Total Returned Qty", "Total Fine" };
@@ -338,6 +342,7 @@ public class AdminMain extends JFrame {
 
 				obj = btnReturn;
 				updateTable(obj.getText());
+				enableBtns(false);
 			}
 		});
 		btnReturn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 35));
@@ -443,7 +448,6 @@ public class AdminMain extends JFrame {
 		MyBtn.changeMyBtnStyle(btnUpdate);
 		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(selectedId);
 				if (selectedId.startsWith("BOK-")) {
 					BookDialogView.showDialog(selectedId);
 				} else if (selectedId.startsWith("AUT-")) {
@@ -471,6 +475,10 @@ public class AdminMain extends JFrame {
 		MyBtn.changeMyBtnStyle(btnDelete);
 		btnDelete.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
+				if(JOptionPane.showConfirmDialog(null, "Are you sure you want to delete?", "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+					return;
+				}
+				
 				if (selectedId.startsWith("BOK-")) {
 					BookController ctl = new BookController();
 					BookModel b = new BookModel();
@@ -517,14 +525,48 @@ public class AdminMain extends JFrame {
 						enableBtns(false);
 					}
 				} else if (selectedId.startsWith("DON-")) {
-//					DonatorController ctl = new DonatorController();
-//					DonatorModel d = new DonatorModel();
-//					d.setDonatorId(selectedId);
-//
-//					if (ctl.delete(d) == 1) {
-//						MyTblFunctions.updateDonatorsTable();
-//						enableBtns(false);
-//					}	
+
+					List<DonationDetailModel> details = DonationDetailController.getAllDonationsById(selectedId);
+
+					List<BookModel> booksToBeUpdated = new ArrayList<>();
+
+					for (DonationDetailModel d : details) {
+						String bookId = d.getBookId();
+
+						int qtyToBeRemoved = d.getQty();
+						int bookQty = BookController.getQty(bookId);
+
+						BookModel book = new BookModel();
+						book.setId(bookId);
+						book.setQty(bookQty - qtyToBeRemoved);
+
+						booksToBeUpdated.add(book);
+					}
+
+					for (BookModel book : booksToBeUpdated) {
+						if (BookController.updateQty(book) != 1) {
+							JOptionPane.showMessageDialog(null, "Error updating book qty");
+							return;
+						}
+					}
+
+					DonationDetailController dctl = new DonationDetailController();
+					DonationDetailModel detail = details.get(0);
+
+					if (dctl.delete(detail) < 1) {
+						JOptionPane.showMessageDialog(null, "Error deleting donation details");
+					}
+
+					DonationController ctl = new DonationController();
+					DonationModel donation = new DonationModel();
+					donation.setDonationId(selectedId);
+
+					if (ctl.delete(donation) != 1) {
+						JOptionPane.showMessageDialog(null, "Delete Failed");
+					}
+					MyTblFunctions.updateDonationsTable();
+					enableBtns(false);
+
 				}
 			}
 		});
@@ -719,8 +761,12 @@ public class AdminMain extends JFrame {
 	}
 
 	private void enableBtns(boolean enable) {
+		btnUpdate.setText(obj.getText().equals("Donations") ? "View" : "Update");
 		btnUpdate.setEnabled(enable);
 		btnDelete.setEnabled(enable);
+
+		// disable for donation table
+//		btnUpdate.setEnabled(obj.getText().equals("Donations") ? false : enable);
 
 		btnUpdate.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
 		btnDelete.setBackground(enable ? LibColors.PRIMARY_BG : Color.LIGHT_GRAY);
@@ -728,9 +774,14 @@ public class AdminMain extends JFrame {
 		if (!enable) {
 			tbl.clearSelection(); // remove table row selection
 		}
+
+//		if(obj.getText().equals("Donations")) { 
+//			btnUpdate.setBackground(Color.LIGHT_GRAY); 
+//		}
 	}
 
 	private void showBtns(boolean show) {
+		
 		btnAdd.setVisible(show);
 		btnUpdate.setVisible(show);
 		btnDelete.setVisible(show);
@@ -740,7 +791,8 @@ public class AdminMain extends JFrame {
 	}
 
 	public static JButton[] getBtns() {
-		JButton[] btns = { btnBooks, btnAuthors, btnGenres, btnPublishers, btnDonators, btnDonation };
+		JButton[] btns = { btnBooks, btnAuthors, btnGenres, btnPublishers, btnDonators, btnDonation, btnBorrow,
+				btnReturn };
 		return btns;
 	}
 }

@@ -75,6 +75,22 @@ public class DonationDetailController {
 		}
 	}
 
+	public int deleteByBookIdAndDonationId(DonationDetailModel detail) {
+		String query = "DELETE FROM lib.donation_details WHERE book_id=? AND donation_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, detail.getBookId());
+			ps.setString(2, detail.getDonationId());
+
+			return ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 0;
+		}
+	}
+
 	public boolean hasDuplicate(DonationDetailModel detail) {
 		String query = "SELECT * FROM lib.donation_details WHERE donation_id=? AND book_id=?";
 
@@ -122,6 +138,26 @@ public class DonationDetailController {
 		return detail;
 	}
 
+	public int getDonatedQtyByBookIdAndDonationId(DonationDetailModel detail) {
+		String query = "SELECT * FROM lib.donation_details WHERE donation_id=? AND book_id=?";
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+
+			ps.setString(1, detail.getDonationId());
+			ps.setString(2, detail.getBookId());
+
+			ResultSet rs = ps.executeQuery();
+
+			if (rs.next()) {
+				return rs.getInt("donated_qty");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+
 	public DonationDetailModel getOneDonationById(DonationDetailModel detail) {
 		String query = "SELECT donation_details.*, donation.*, book.title FROM lib.donation_details\r\n"
 				+ "FULL JOIN lib.donation ON donation_details.donation_id = donation.donation_id\r\n"
@@ -154,7 +190,7 @@ public class DonationDetailController {
 //				+ "FULL JOIN lib.donation ON donation_details.donation_id = donation.donation_id "
 //				+ "INNER JOIN lib.book ON donation_details.book_id = book.book_id WHERE donation_id=?"
 //				+ "ORDER BY donation.donation_id ASC;";
-		
+
 		String query = "SELECT * FROM lib.donation JOIN lib.donator ON donation.donator_id=donator.donator_id WHERE donation_id=? ORDER BY donation_id ASC;";
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
@@ -198,7 +234,7 @@ public class DonationDetailController {
 	}
 
 	public static List<DonationDetailModel> getAllDonationsById(String id) {
-		String query ="SELECT * FROM donation_details JOIN lib.book ON donation_details.book_id=book.book_id JOIN author on book.author_id=author.author_id JOIN donation ON donation_details.donation_id=donation.donation_id WHERE donation_details.donation_id=? ORDER BY book.title ASC;";
+		String query = "SELECT * FROM donation_details JOIN lib.book ON donation_details.book_id=book.book_id JOIN author on book.author_id=author.author_id JOIN donation ON donation_details.donation_id=donation.donation_id WHERE donation_details.donation_id=? ORDER BY book.title ASC;";
 		List<DonationDetailModel> detail = new ArrayList<>();
 
 		try {
@@ -215,6 +251,34 @@ public class DonationDetailController {
 				dd.setTitle(rs.getString("title"));
 				dd.setQty(rs.getInt("donated_qty"));
 				dd.setAuthorName(rs.getString("author_name"));
+
+				detail.add(dd);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return detail;
+	}
+	
+	public List<DonationDetailModel> getAllDonationsByDonationIdAndBookId(DonationDetailModel data) {
+		String query = "SELECT * FROM lib.donation_details WHERE donation_details.donation_id =? AND donation_details.book_id=? ORDER BY donation_details.donation_id ASC;";
+		List<DonationDetailModel> detail = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setString(1, data.getDonationId());
+			ps.setString(2, data.getBookId());
+			
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				DonationDetailModel dd = new DonationDetailModel();
+				dd.setDonationId(rs.getString("donation_id"));
+				dd.setDonatorId(rs.getString("donator_id"));
+				dd.setDate(rs.getString("date"));
+				dd.setBookId(rs.getString("book_id"));
+				dd.setTitle(rs.getString("title"));
+				dd.setQty(rs.getInt("donated_qty"));
 
 				detail.add(dd);
 			}
