@@ -139,7 +139,7 @@ public class AdminLogin extends JDialog {
 				AdminMain.showFrame();
 				dispose();
 			} else {
-				JOptionPane.showMessageDialog(null, "Username and Passord combination is incorrect");
+				JOptionPane.showMessageDialog(null, "Username and Password combination is incorrect");
 			}
 		}
 	}

@@ -152,9 +152,9 @@ public class Main extends JFrame {
 		row = books.size() / 6 + 1; col = 6;
 		panelBooks.setLayout(new GridLayout(row, col, 10, 20));
 
-		JLabel title = new JLabel("Available Books");
+		JLabel title = new JLabel("Books In The Library");
 		title.setFont(new Font("Tahoma", Font.BOLD, 15));
-		title.setBounds(10, 61, 500, 30);
+		title.setBounds(10, 66, 500, 30);
 		contentPanel.add(title);
 
 		JButton btnBorrow = new JButton("Borrow");
@@ -206,6 +206,13 @@ public class Main extends JFrame {
 			checkBox.setBorderPainted(false); // Remove border
 
 			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, checkBox);
+			label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("Selected item ID: " + book.getId());
+                    BookDetailsView.showDialog(book.getId());
+                }
+            });
 //			label.setBorder(BorderFactory.createLineBorder(Color.orange));
 			panelBooks.add(label);
 		}
