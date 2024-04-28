@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.time.Year;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -371,12 +372,23 @@ public class BookDialogView extends JDialog {
 			txtPubYr.requestFocus();
 			txtPubYr.selectAll();
 			return false;
-		} else if (txtPrice.getText().length() < 3) {
-			JOptionPane.showMessageDialog(null, "Price must be greater than 100");
+		} else if(Integer.parseInt(txtPubYr.getText()) < 1800 || Integer.parseInt(txtPubYr.getText()) > Year.now().getValue()) {
+			JOptionPane.showMessageDialog(null, "Invalid Year\nRequired Format: between 1500 and current year");
+			txtPubYr.requestFocus();
+			txtPubYr.selectAll();
+			return false;
+		}
+		else if (txtPrice.getText().length() < 4) {
+			JOptionPane.showMessageDialog(null, "Price must be greater than 1,000");
 			txtPrice.requestFocus();
 			txtPrice.selectAll();
 			return false;
-		}
+		} else if(Integer.parseInt(txtPrice.getText()) > 300000) {
+			JOptionPane.showMessageDialog(null, "Price must be less than 300,000");
+			txtPrice.requestFocus();
+			txtPrice.selectAll();
+			return false;
+		} 
 		return true;
 	}
 

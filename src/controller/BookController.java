@@ -5,8 +5,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import com.mysql.jdbc.Connection;
 import com.mysql.jdbc.PreparedStatement;
+import com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException;
 
 import config.DBConfig;
 import model.BookModel;
@@ -79,10 +82,12 @@ public class BookController {
 			ps.setString(1, book.getId());
 
 			return ps.executeUpdate();
+		} catch (MySQLIntegrityConstraintViolationException e) {
+			JOptionPane.showMessageDialog(null, "Delete Fails!\nBooks is borrowed.");
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return 0;
 		}
+		return 0;
 	}
 
 	public boolean hasDuplicate(BookModel book) {
@@ -241,7 +246,7 @@ public class BookController {
 		}
 		return null;
 	}
-	
+
 	public static BookModel getOneBookById(String id) {
 		String query = "SELECT book.*, author.author_name, genre.genre_name, publisher.publisher_name FROM lib.book\r\n"
 				+ "INNER JOIN lib.author ON book.author_id = author.author_id\r\n"
@@ -295,8 +300,6 @@ public class BookController {
 		}
 		return null;
 	}
-	
-	
 
 	public static List<BookModel> searchBooksByGenreId(String genreId) {
 		String query = "SELECT book.*, author.author_name, genre.genre_name, publisher.publisher_name FROM lib.book "

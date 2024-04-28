@@ -188,9 +188,12 @@ public class Main extends JFrame {
 					String genreId = GenreController.getIdByName(genre);
 					
 					books = BookController.searchBooksByGenreId(genreId);
-					panelBooks.removeAll();
-					renderBooks();
+				} else {
+					BookController ctl = new BookController();
+					books = ctl.getAllBooks();
 				}
+				panelBooks.removeAll();
+				renderBooks();
 			}
 		});
 		cboFilter.setFont(new Font("Tahoma", Font.PLAIN, 13));
