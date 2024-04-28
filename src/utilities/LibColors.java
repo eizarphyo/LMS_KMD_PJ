@@ -14,5 +14,6 @@ public class LibColors {
 	public final static Color PRIMARY_ACCENT = new Color(234, 197, 87);
 	
 	public final static int LATE_FINE = 500;
+	public final static double DMG_PERCENT = 0.5;
 
 }

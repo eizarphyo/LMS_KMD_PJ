@@ -249,6 +249,13 @@ public class Main extends JFrame {
 			checkBox.setBorderPainted(false); // Remove border
 
 			MyImageLabel label = new MyImageLabel(book.getTitle(), bookCover, checkBox);
+			label.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    System.out.println("Selected item ID: " + book.getId());
+                    BookDetailsView.showDialog(book.getId());
+                }
+            });
 //			label.setBorder(BorderFactory.createLineBorder(Color.orange));
 			panelBooks.add(label);
 		}

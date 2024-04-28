@@ -53,6 +53,7 @@ import model.ReturnModel;
 import utilities.AutoID;
 import utilities.ChangeDate;
 import utilities.CompareDates;
+import utilities.CurrencyFormatter;
 import utilities.LibColors;
 import utilities.MyComboBox;
 
@@ -299,7 +300,7 @@ public class ReturnDialogView extends JDialog {
 									BookModel book = BookController.getOneBookByTitle(checkbox.getText());
 
 									int price = book.getPrice();
-									int fine = (int) Math.round(price * 0.1);
+									int fine = (int) Math.round(price * LibColors.DMG_PERCENT);
 
 									int dmgFees = Integer.parseInt(lblDmgFine.getText().split(" ")[0]);
 									int totalFine = Integer.parseInt(lblTotalFine.getText().split(" ")[0]);
@@ -315,8 +316,8 @@ public class ReturnDialogView extends JDialog {
 										totalFine -= fine;
 									}
 
-									lblDmgFine.setText(dmgFees + " Ks.");
-									lblTotalFine.setText(totalFine + " Ks.");
+									lblDmgFine.setText(CurrencyFormatter.formatCurrency(dmgFees) + " Ks.");
+									lblTotalFine.setText(CurrencyFormatter.formatCurrency(totalFine) + " Ks.");
 								}
 							});
 							checkPanel.add(checkbox);

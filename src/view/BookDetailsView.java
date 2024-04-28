@@ -14,6 +14,7 @@ import javax.swing.border.EmptyBorder;
 import components.MyBtn;
 import controller.BookController;
 import model.BookModel;
+import utilities.CurrencyFormatter;
 import utilities.LibColors;
 
 import javax.swing.JLabel;
@@ -63,7 +64,7 @@ public class BookDetailsView extends JDialog {
 			lblTitle.setText(book.getTitle());
 			lblGenre.setText(book.getGenreName());
 			lblAuthor.setText(book.getAuthorName());
-			lblPrice.setText(book.getPrice()+" MMK");
+			lblPrice.setText(CurrencyFormatter.formatCurrency(book.getPrice())+" MMK");
 			lblQty.setText(book.getQty() + "");
 			lblPubYr.setText(book.getPuplishedYr()+"");
 			lblPublisher.setText(book.getPublisherName());
