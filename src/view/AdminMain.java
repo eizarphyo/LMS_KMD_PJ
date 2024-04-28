@@ -152,6 +152,7 @@ public class AdminMain extends JFrame {
 		Image img = new ImageIcon(imgURL).getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
 
 		ImageIcon icon = new ImageIcon(img);
+		setIconImage(img);
 
 		lbl = new JLabel("Shiba Shelves");
 		// Set padding by adjusting the insets of the label's border

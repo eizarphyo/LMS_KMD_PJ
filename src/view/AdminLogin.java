@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
@@ -18,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.Font;
+import java.awt.Image;
 import java.awt.Toolkit;
 
 import javax.swing.JTextField;
@@ -64,6 +66,10 @@ public class AdminLogin extends JDialog {
 //		int centerY = (int) (screenDimension.getHeight() - getHeight()) / 2;
 //		setLocation(centerX, centerY);
 
+		java.net.URL imgURL = getClass().getResource("../images/shiba.png");
+		Image img = new ImageIcon(imgURL).getImage().getScaledInstance(45, 45, Image.SCALE_SMOOTH);
+
+		setIconImage(img);
 		
 		setBackground(Color.BLACK);
 		getContentPane().setLayout(new BorderLayout());
