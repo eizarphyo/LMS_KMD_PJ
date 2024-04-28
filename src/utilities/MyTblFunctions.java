@@ -271,7 +271,8 @@ public class MyTblFunctions {
 		dtm.setRowCount(0);
 
 		BorrowController bctl = new BorrowController();
-		List<BorrowModel> borrows = bctl.getAllBorrow();
+		List<BorrowModel> borrows = bctl.getAllUnfinishedBorrow();
+//		List<BorrowModel> borrows = bctl.getAllBorrow();
 
 		String[] row = new String[7];
 

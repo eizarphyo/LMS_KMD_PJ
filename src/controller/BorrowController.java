@@ -124,6 +124,40 @@ public class BorrowController {
 		}
 		return borrowlist;
 	}
+	
+	public List<BorrowModel> getAllUnfinishedBorrow() {
+		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE is_all_returned=? ORDER BY borrow_id DESC";
+		List<BorrowModel> borrowlist = new ArrayList<>();
+
+		try {
+			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
+			ps.setBoolean(1, false);
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				BorrowModel borrow = new BorrowModel();
+
+				borrow.setBorrowId(rs.getString("borrow_id"));
+				borrow.setStuId(rs.getString("stu_id"));
+//				borrow.setBorrowAt(rs.getString("borrowed_at"));
+				borrow.setBorrowAt(rs.getDate("borrowed_at"));
+				borrow.setBorrowQty(rs.getInt("borrowed_qty"));
+				borrow.setQtyToBeReturned(rs.getInt("qty_to_be_returned"));
+				borrow.setReturnedQty(rs.getInt("returned_qty"));
+				borrow.setAllReturned(rs.getBoolean("is_all_returned"));
+				
+				borrow.setStuName(rs.getString("stu_name"));
+
+				StudentModel student = new StudentModel();
+				student.setStuId(borrow.getStuId());
+
+				borrowlist.add(borrow);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return borrowlist;
+	}
 
 //	public BorrowModel getOneBorrowById(BorrowModel data) {
 //		String query = "SELECT * FROM lib.borrow WHERE borrow_id=?";
@@ -260,12 +294,14 @@ public class BorrowController {
 	}
 	
 	public static List<BorrowModel> getAllBorrowsByDate(java.sql.Date date) {
-		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE borrow.borrowed_at=? ORDER BY borrow_id DESC";
+//		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE borrow.borrowed_at=? ORDER BY borrow_id DESC";
+		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE borrow.borrowed_at=? AND is_all_returned=? ORDER BY borrow_id DESC";
 		List<BorrowModel> borrowlist = new ArrayList<>();
 
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setDate(1, date);
+			ps.setBoolean(2, false);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
@@ -294,12 +330,13 @@ public class BorrowController {
 	}
 	
 	public static List<BorrowModel> searchByStudentName(String name) {
-		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE stu_name LIKE ? ORDER BY stu_name ASC";
+		String query = "SELECT * FROM lib.borrow JOIN lib.student ON borrow.stu_id=student.stu_id WHERE stu_name LIKE ? AND is_all_returned=? ORDER BY stu_name ASC";
 		List<BorrowModel> borrowlist = new ArrayList<>();
 
 		try {
 			PreparedStatement ps = (PreparedStatement) con.prepareStatement(query);
 			ps.setString(1, name + "%");
+			ps.setBoolean(2, false);
 			ResultSet rs = ps.executeQuery();
 
 			while (rs.next()) {
